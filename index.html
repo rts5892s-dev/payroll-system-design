@@ -139,6 +139,7 @@ h2{
 }
 .badge-good{ background:var(--good-soft); color:var(--good); }
 .badge-bad{ background:var(--bad-soft); color:var(--bad); }
+.badge-warn{ background:var(--warn-soft); color:var(--warn); }
 .badge-dot{ width:6px; height:6px; border-radius:50%; background:currentColor; }
 
 /* ---------- Architecture diagram ---------- */
@@ -343,6 +344,19 @@ table.dash-table th:nth-child(-n+4), table.dash-table td:nth-child(-n+4){ text-a
 table.dash-table td.mono{ font-family:"JetBrains Mono", monospace; font-variant-numeric:tabular-nums; }
 table.dash-table tbody tr:last-child td{ border-bottom:none; }
 table.dash-table tbody tr:hover td{ background:var(--surface-2); }
+
+.att-gatebar{
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  background:var(--surface-2); border-radius:8px; padding:12px 16px; margin-bottom:16px;
+}
+.att-gatebar .info{ display:flex; align-items:center; gap:10px; font-size:.86rem; color:var(--ink-muted); }
+.att-gate-btn{
+  font:inherit; font-weight:700; font-size:.82rem; cursor:pointer; border-radius:7px; padding:7px 14px;
+}
+.att-gate-btn.confirm{ background:var(--accent); color:#fff; border:1px solid var(--accent); }
+.att-gate-btn.unconfirm{ background:var(--surface); color:var(--ink-muted); border:1px solid var(--border); }
+#att-table input:disabled, #att-table select:disabled,
+.sheet-addrow:disabled{ opacity:.5; cursor:not-allowed; }
 
 #att-table td, #att-table th{ text-align:left; }
 #att-table td input, #att-table td select{
@@ -812,7 +826,7 @@ CREATE TABLE payroll_details (
     </div>
 
     <div id="panel-attendance" hidden>
-      <p class="view-caption">직원별 일별 근태를 입력하고 월 합계를 확인한 뒤, "급여 입력에 반영" 버튼으로 엑셀형·카드형 화면의 시간 컬럼에 그대로 채워 넣습니다.</p>
+      <p class="view-caption">직원별 일별 근태를 입력 → <strong>근태 확정</strong>(급여계산 전 게이트) → 급여 입력 반영 순으로 진행합니다. 확정 전에는 급여 반영 버튼이 비활성화되고, 확정 후에는 근태 기록이 잠깁니다.</p>
       <div class="card-toolbar">
         <div class="card-picker">
           직원 선택
@@ -824,6 +838,8 @@ CREATE TABLE payroll_details (
         </div>
       </div>
       <div class="card-shell">
+        <div id="att-gate" class="att-gatebar"></div>
+
         <div class="dash-table-wrap">
           <table class="dash-table" id="att-table">
             <thead><tr><th>날짜</th><th>근태구분</th><th>시간(H)</th><th></th></tr></thead>
@@ -924,7 +940,7 @@ const ROWS = [
     bonusCash:0, bonusKind:0, tuition:0, annualLeavePay:0,
     yearEndTax:0, clubFee:0, advance:0, advanceMeal:0,
     incomeTax:11360, pension:100830, healthIns:77380, ltcIns:10160,
-    attendance: [] },
+    attendance: [], attConfirmed:false, attConfirmedAt:null },
   { no:2, empNo:'1002', name:'김영희', gender:'여', division:'생산', dept:'생산1팀', position:'사원',
     dependents:1, stdHours:209, annualSalary:31800000, baseSalary:2650000, jobAllow:0,
     retentionHours:0, retentionAllow:0, satDayHours:0, satNightHours:0, satAllow:30000, nightOtHours:0, etcAllow:0,
@@ -935,7 +951,7 @@ const ROWS = [
     attendance: [
       { date:'2026-03-05', typeKey:'ot', hours:5 },
       { date:'2026-03-12', typeKey:'ot', hours:5 },
-    ] },
+    ], attConfirmed:false, attConfirmedAt:null },
   { no:3, empNo:'1003', name:'박민수', gender:'남', division:'생산', dept:'생산2팀', position:'반장',
     dependents:3, stdHours:209, annualSalary:28800000, baseSalary:2400000, jobAllow:50000,
     retentionHours:0, retentionAllow:0, satDayHours:0, satNightHours:0, satAllow:0, nightOtHours:0, etcAllow:0,
@@ -945,7 +961,7 @@ const ROWS = [
     incomeTax:20500, pension:108000, healthIns:89400, ltcIns:11570,
     attendance: [
       { date:'2026-03-08', typeKey:'holiday', hours:5 },
-    ] },
+    ], attConfirmed:true, attConfirmedAt:'2026-03-31 17:05' },
 ];
 
 const roundUp10 = n => Math.ceil(n/10)*10;
@@ -978,7 +994,8 @@ function calc(row){
 }
 
 function blankRow(no){
-  const row = { no, empNo:'', name:'', gender:'남', division:'', dept:'', position:'', dependents:0, stdHours:209, attendance:[] };
+  const row = { no, empNo:'', name:'', gender:'남', division:'', dept:'', position:'', dependents:0, stdHours:209,
+                attendance:[], attConfirmed:false, attConfirmedAt:null };
   COLUMNS.forEach(col => { if (!col.spacer && col.type !== 'calc' && !(col.key in row)) row[col.key] = 0; });
   return row;
 }
@@ -1229,6 +1246,8 @@ function renderDashboard(){
   kpis.appendChild(netTile);
   kpis.appendChild(tile('평균 시급', fmt(avgHourly) + '원'));
   kpis.appendChild(tile('검증 경고', (warnings.length ? '⚠ ' : '') + warnings.length + '건', warnings.length ? '확인이 필요합니다' : '이상 없음', warnings.length > 0));
+  const unconfirmed = ROWS.filter(r => !r.attConfirmed).length;
+  kpis.appendChild(tile('근태 미확정', (unconfirmed ? '⚠ ' : '') + unconfirmed + '명', unconfirmed ? '급여계산 게이트 대기 중' : '전원 확정 완료', unconfirmed > 0));
   container.appendChild(kpis);
 
   const deptMap = {};
@@ -1335,12 +1354,44 @@ function renderAttSummary(){
   ).join('') + '</div>';
 }
 
+function renderAttGate(){
+  const row = ROWS[attIndex];
+  const gate = document.getElementById('att-gate');
+  gate.innerHTML = '';
+
+  const info = document.createElement('div'); info.className = 'info';
+  if (row.attConfirmed){
+    info.innerHTML = '<span class="badge badge-good"><span class="badge-dot"></span>근태 확정됨</span>' +
+      '<span>' + (row.attConfirmedAt || '') + ' 확정 · 급여계산 전 게이트 통과</span>';
+  } else {
+    info.innerHTML = '<span class="badge badge-warn"><span class="badge-dot"></span>근태 미확정</span>' +
+      '<span>확정 전에는 급여 입력에 반영할 수 없습니다.</span>';
+  }
+  gate.appendChild(info);
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'att-gate-btn ' + (row.attConfirmed ? 'unconfirm' : 'confirm');
+  btn.textContent = row.attConfirmed ? '확정 취소' : '근태 확정하기';
+  btn.addEventListener('click', () => {
+    row.attConfirmed = !row.attConfirmed;
+    row.attConfirmedAt = row.attConfirmed
+      ? new Date().toLocaleString('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' })
+      : null;
+    renderAttendance();
+  });
+  gate.appendChild(btn);
+}
+
 function renderAttendance(){
   if (attIndex >= ROWS.length) attIndex = ROWS.length - 1;
   if (attIndex < 0) attIndex = 0;
   renderAttSelect();
   const row = ROWS[attIndex];
   if (!row.attendance) row.attendance = [];
+  renderAttGate();
+  const locked = !!row.attConfirmed;
+
   const body = document.getElementById('att-body');
   body.innerHTML = '';
   row.attendance.forEach((rec, j) => {
@@ -1348,12 +1399,13 @@ function renderAttendance(){
 
     const dateTd = document.createElement('td');
     const dateInput = document.createElement('input');
-    dateInput.type = 'date'; dateInput.value = rec.date || '';
+    dateInput.type = 'date'; dateInput.value = rec.date || ''; dateInput.disabled = locked;
     dateInput.addEventListener('input', () => { rec.date = dateInput.value; });
     dateTd.appendChild(dateInput);
 
     const typeTd = document.createElement('td');
     const typeSel = document.createElement('select');
+    typeSel.disabled = locked;
     ATT_TYPES.forEach(t => {
       const o = document.createElement('option');
       o.value = t.key; o.textContent = t.label;
@@ -1365,13 +1417,13 @@ function renderAttendance(){
 
     const hoursTd = document.createElement('td');
     const hoursInput = document.createElement('input');
-    hoursInput.type = 'number'; hoursInput.step = '0.5'; hoursInput.value = rec.hours || 0;
+    hoursInput.type = 'number'; hoursInput.step = '0.5'; hoursInput.value = rec.hours || 0; hoursInput.disabled = locked;
     hoursInput.addEventListener('input', () => { rec.hours = Number(hoursInput.value) || 0; renderAttSummary(); });
     hoursTd.appendChild(hoursInput);
 
     const delTd = document.createElement('td');
     const delBtn = document.createElement('button');
-    delBtn.type = 'button'; delBtn.className = 'att-del'; delBtn.textContent = '삭제';
+    delBtn.type = 'button'; delBtn.className = 'att-del'; delBtn.textContent = '삭제'; delBtn.disabled = locked;
     delBtn.addEventListener('click', () => { row.attendance.splice(j, 1); renderAttendance(); });
     delTd.appendChild(delBtn);
 
@@ -1379,11 +1431,14 @@ function renderAttendance(){
     body.appendChild(tr);
   });
   renderAttSummary();
+  document.getElementById('btn-add-att').disabled = locked;
+  document.getElementById('btn-apply-att').disabled = !locked;
   document.getElementById('att-apply-status').textContent = '';
 }
 
 function addAttRecord(){
   const row = ROWS[attIndex];
+  if (row.attConfirmed) return;
   if (!row.attendance) row.attendance = [];
   row.attendance.push({ date:'', typeKey:'ot', hours:0 });
   renderAttendance();
@@ -1391,6 +1446,11 @@ function addAttRecord(){
 
 function applyAttendanceToPayroll(){
   const row = ROWS[attIndex];
+  if (!row.attConfirmed){
+    document.getElementById('att-apply-status').innerHTML =
+      '<span class="badge badge-bad"><span class="badge-dot"></span>근태를 먼저 확정해주세요</span>';
+    return;
+  }
   const sums = attSums(row);
   ATT_TYPES.forEach(t => { row[t.target] = sums[t.key]; });
   if (activeView === 'sheet') renderSheetFull();
