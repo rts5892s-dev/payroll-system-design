@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<title>군포공장 급여계산 시스템</title>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#EEF1EC;
+  --surface:#FFFFFF;
+  --surface-2:#E3E8DF;
+  --ink:#1C231D;
+  --ink-muted:#5B6455;
+  --border:#D2D8C9;
+  --accent:#1F6F5C;
+  --accent-ink:#0E4238;
+  --accent-soft:#DCEDE6;
+  --good:#2E7D46;
+  --good-soft:#E1F1E3;
+  --bad:#B23B3B;
+  --bad-soft:#FBE7E5;
+  --warn:#8A5F10;
+  --warn-soft:#F6ECD3;
+  --calc-bg:#E9F3EC;
+  --shadow: 0 1px 2px rgba(20,30,20,.06), 0 6px 18px rgba(20,30,20,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12160F;
+    --surface:#1B211A;
+    --surface-2:#212820;
+    --ink:#E7EBE1;
+    --ink-muted:#A2AC96;
+    --border:#333C2E;
+    --accent:#54C4A3;
+    --accent-ink:#BFE9DA;
+    --accent-soft:#1D3129;
+    --good:#59C97B;
+    --good-soft:#1C3020;
+    --bad:#E2827A;
+    --bad-soft:#38211F;
+    --warn:#D8A94A;
+    --warn-soft:#382C13;
+    --calc-bg:#1B2A22;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12160F;
+  --surface:#1B211A;
+  --surface-2:#212820;
+  --ink:#E7EBE1;
+  --ink-muted:#A2AC96;
+  --border:#333C2E;
+  --accent:#54C4A3;
+  --accent-ink:#BFE9DA;
+  --accent-soft:#1D3129;
+  --good:#59C97B;
+  --good-soft:#1C3020;
+  --bad:#E2827A;
+  --bad-soft:#38211F;
+  --warn:#D8A94A;
+  --warn-soft:#382C13;
+  --calc-bg:#1B2A22;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Noto Sans KR", "Malgun Gothic", sans-serif;
+  line-height:1.6;
+  padding-inline:20px;
+  padding-block:0 64px;
+}
+.mono{ font-family:"JetBrains Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.wrap{ max-width: 880px; margin: 0 auto; }
+
+/* ---------- Header ---------- */
+header.page{ padding-block: 40px 28px; border-bottom: 1px solid var(--border); }
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:.78rem; letter-spacing:.08em; font-weight:700;
+  color: var(--accent-ink); background: var(--accent-soft);
+  padding: 5px 11px; border-radius: 999px; text-transform:uppercase;
+}
+h1{
+  font-family:"Noto Serif KR", serif;
+  font-weight:700;
+  font-size: clamp(1.7rem, 1.2rem + 2vw, 2.5rem);
+  text-wrap: balance;
+  margin: 16px 0 8px;
+  letter-spacing:-.01em;
+}
+.meta{ color:var(--ink-muted); font-size:.92rem; }
+.meta .mono{ color:var(--ink); }
+
+/* ---------- Sections ---------- */
+section{ padding-block: 40px; border-bottom: 1px solid var(--border); }
+section:last-of-type{ border-bottom:none; }
+h2{
+  font-family:"Noto Serif KR", serif;
+  font-size: 1.4rem; font-weight:700; margin: 0 0 6px;
+}
+.section-desc{ color:var(--ink-muted); max-width:64ch; margin:0 0 24px; }
+
+/* ---------- Data model cards ---------- */
+.model-grid{
+  display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;
+}
+@media (max-width: 640px){ .model-grid{ grid-template-columns: 1fr; } }
+.model-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  padding:18px 18px 16px; box-shadow: var(--shadow);
+}
+.model-card h3{
+  font-size:.98rem; margin:0 0 4px; font-weight:700;
+}
+.model-card .card-note{ color:var(--ink-muted); font-size:.82rem; margin:0 0 12px; }
+.field-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+.field-list li{
+  display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  font-size:.86rem; padding-block:2px;
+  border-bottom: 1px dashed var(--border);
+}
+.field-list li:last-child{ border-bottom:none; }
+.field-name{ color:var(--ink); }
+.field-tag{
+  font-size:.68rem; font-weight:700; letter-spacing:.02em; white-space:nowrap;
+  padding:2px 7px; border-radius:6px;
+}
+.tag-input{ background:var(--accent-soft); color:var(--accent-ink); }
+.tag-calc{ background:var(--surface-2); color:var(--ink-muted); }
+
+/* ---------- Pipeline ---------- */
+.pipeline{ list-style:none; margin:0; padding:0; counter-reset:step; }
+.pipeline li{
+  counter-increment: step;
+  position:relative; padding: 14px 0 14px 46px; border-bottom:1px solid var(--border);
+}
+.pipeline li:last-child{ border-bottom:none; }
+.pipeline li::before{
+  content: counter(step);
+  position:absolute; left:0; top:14px;
+  width:28px; height:28px; border-radius:8px;
+  background:var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-family:"JetBrains Mono", monospace; font-size:.82rem; font-weight:600;
+}
+.step-title{ font-weight:700; font-size:.95rem; margin-bottom:3px; }
+.formula{
+  display:inline-block; background:var(--surface-2); border:1px solid var(--border);
+  border-radius:6px; padding:3px 9px; font-size:.82rem; margin:4px 0;
+}
+.step-desc{ color:var(--ink-muted); font-size:.86rem; margin-top:2px; }
+
+/* ---------- Validation badges ---------- */
+.badge{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:.78rem; font-weight:700; padding:3px 10px; border-radius:999px;
+}
+.badge-good{ background:var(--good-soft); color:var(--good); }
+.badge-bad{ background:var(--bad-soft); color:var(--bad); }
+.badge-dot{ width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+/* ---------- Architecture diagram ---------- */
+.arch{
+  display:flex; align-items:stretch; gap:0; flex-wrap:wrap; margin-top:8px;
+}
+.arch-box{
+  flex:1 1 150px; background:var(--surface); border:1px solid var(--border);
+  border-radius:10px; padding:14px; box-shadow:var(--shadow);
+  display:flex; flex-direction:column; gap:4px; min-width:150px;
+}
+.arch-box h4{ margin:0; font-size:.86rem; }
+.arch-box p{ margin:0; font-size:.76rem; color:var(--ink-muted); }
+.arch-arrow{
+  display:flex; align-items:center; justify-content:center;
+  color:var(--ink-muted); font-size:1.3rem; padding:0 8px; flex:0 0 auto;
+}
+@media (max-width:640px){ .arch{ flex-direction:column; } .arch-arrow{ transform:rotate(90deg); padding:4px 0; } }
+
+.note-list{ margin:20px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+.note-list li{
+  display:flex; gap:10px; font-size:.88rem; color:var(--ink-muted);
+  background:var(--surface-2); border-radius:8px; padding:10px 12px;
+}
+.note-list li strong{ color:var(--ink); }
+.note-mark{ color:var(--accent); flex:0 0 auto; }
+
+/* ---------- Excel-parallel sheet ---------- */
+.sheet-breakout{
+  width:100vw; margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw);
+  padding-inline:20px;
+}
+.sheet-toolbar{
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  max-width:1440px; margin:0 auto 0; padding:0 4px;
+}
+.sheet-tab{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--surface); border:1px solid var(--border); border-bottom:2px solid var(--accent);
+  border-radius:6px 6px 0 0; padding:6px 16px; font-size:.82rem; font-weight:700;
+}
+.sheet-tab .dot{ width:8px; height:8px; border-radius:50%; background:var(--accent); flex:0 0 auto; }
+.sheet-legend{ display:flex; gap:16px; flex-wrap:wrap; font-size:.78rem; color:var(--ink-muted); }
+.sheet-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.legend-swatch{ width:14px; height:14px; border-radius:3px; border:1px solid var(--border); display:inline-block; }
+.legend-input{ background:var(--surface); }
+.legend-calc{ background:var(--calc-bg); }
+.sheet-addrow{
+  font: inherit; font-weight:700; font-size:.8rem; color:var(--accent-ink);
+  background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px;
+  padding:6px 14px; cursor:pointer;
+}
+.sheet-addrow:hover{ filter:brightness(1.05); }
+.sheet-addrow:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+.sheet-scroll{
+  max-width:1440px; margin:6px auto 0; overflow:auto; max-height:72vh;
+  border:1px solid var(--border); border-radius:0 8px 8px 8px; background:var(--surface);
+}
+table.sheet{ border-collapse:separate; border-spacing:0; width:max-content; font-size:.76rem; }
+table.sheet th, table.sheet td{
+  border-right:1px solid var(--border); border-bottom:1px solid var(--border);
+  height:26px; padding:0 5px; white-space:nowrap;
+}
+table.sheet thead th{
+  background:var(--surface-2); color:var(--ink-muted); font-weight:700;
+  text-align:center; position:sticky; z-index:3;
+}
+table.sheet thead tr:nth-child(1) th{ top:0; }
+table.sheet thead tr:nth-child(2) th{ top:27px; }
+table.sheet td.spacer, table.sheet th.spacer{
+  border:none; background:var(--bg); width:12px; min-width:12px; padding:0;
+}
+table.sheet td input, table.sheet td select{
+  width:100%; height:24px; border:0; background:transparent; color:var(--accent-ink);
+  font: inherit; font-family:"JetBrains Mono", monospace; text-align:right; padding:0 2px;
+}
+table.sheet td select{ font-family:"Noto Sans KR", sans-serif; text-align:left; color:var(--ink); }
+table.sheet td input.txt{ text-align:left; color:var(--ink); font-family:"Noto Sans KR", sans-serif; }
+table.sheet td input:focus, table.sheet td select:focus{
+  outline:2px solid var(--accent); outline-offset:-2px; background:var(--accent-soft);
+}
+table.sheet td.calc{
+  background:var(--calc-bg); text-align:right; color:var(--ink);
+  font-family:"JetBrains Mono", monospace; font-variant-numeric:tabular-nums;
+}
+table.sheet td.calc.bad{ background:var(--bad-soft); color:var(--bad); font-weight:700; }
+table.sheet tbody tr:hover td:not(.spacer){ background:var(--accent-soft); }
+table.sheet tbody tr:hover td.calc{ background:var(--good-soft); }
+table.sheet tbody tr:hover td.calc.bad{ background:var(--bad-soft); }
+
+.frz{ position:sticky; left:var(--frz-left,0); z-index:1; background:var(--surface); }
+thead .frz{ z-index:4; background:var(--surface-2); }
+.frz-edge{ box-shadow: 2px 0 4px -2px rgba(0,0,0,.28); }
+
+.sample-note{ max-width:1440px; margin:10px auto 0; font-size:.8rem; color:var(--ink-muted); }
+.sample-note strong{ color:var(--bad); }
+
+/* ---------- View switcher ---------- */
+.view-toggle{ display:flex; gap:6px; margin-bottom:18px; border-bottom:1px solid var(--border); }
+.view-btn{
+  font:inherit; font-weight:700; font-size:.9rem; cursor:pointer;
+  background:none; border:none; color:var(--ink-muted);
+  padding:10px 4px; margin-right:20px; border-bottom:3px solid transparent;
+  display:flex; align-items:center; gap:8px;
+}
+.view-btn .num{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:20px; height:20px; border-radius:50%; background:var(--surface-2);
+  font-family:"JetBrains Mono", monospace; font-size:.72rem; color:var(--ink-muted);
+}
+.view-btn.active{ color:var(--ink); border-bottom-color:var(--accent); }
+.view-btn.active .num{ background:var(--accent); color:#fff; }
+.view-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.view-caption{ color:var(--ink-muted); font-size:.82rem; margin:-8px 0 20px; }
+
+/* ---------- Card view ---------- */
+.card-toolbar{
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  margin-bottom:14px;
+}
+.card-picker{ display:flex; align-items:center; gap:8px; font-size:.86rem; color:var(--ink-muted); }
+.card-picker select{
+  font:inherit; font-size:.88rem; padding:7px 10px; border-radius:7px;
+  border:1px solid var(--border); background:var(--surface); color:var(--ink);
+}
+.card-nav{ display:flex; gap:6px; }
+.card-nav button{
+  font:inherit; font-weight:700; font-size:.86rem; cursor:pointer;
+  background:var(--surface); border:1px solid var(--border); border-radius:7px;
+  padding:6px 12px; color:var(--ink);
+}
+.card-nav button:hover{ background:var(--surface-2); }
+.card-shell{
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+  box-shadow:var(--shadow); padding:22px;
+}
+.card-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:26px; align-items:start; }
+@media (max-width:760px){ .card-grid{ grid-template-columns: 1fr; } }
+.card-fgroup{ margin-bottom:18px; }
+.card-fgroup h4{
+  font-size:.76rem; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--ink-muted); margin:0 0 10px; font-weight:700;
+}
+.card-frow{ display:grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap:10px; margin-bottom:8px; }
+label.card-f{ display:flex; flex-direction:column; gap:4px; font-size:.8rem; color:var(--ink-muted); }
+label.card-f input, label.card-f select{
+  font:inherit; font-family:"JetBrains Mono", monospace; font-size:.86rem;
+  padding:7px 9px; border-radius:7px; border:1px solid var(--border);
+  background:var(--bg); color:var(--accent-ink);
+}
+label.card-f select{ font-family:"Noto Sans KR", sans-serif; color:var(--ink); }
+label.card-f input.txt{ font-family:"Noto Sans KR", sans-serif; color:var(--ink); }
+label.card-f input:focus, label.card-f select:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+
+.card-summary{ position:sticky; top:16px; }
+.card-sblock{ background:var(--surface-2); border-radius:10px; padding:14px 16px; margin-bottom:12px; }
+.card-sblock h5{ margin:0 0 8px; font-size:.78rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.05em; }
+.card-srow{ display:flex; justify-content:space-between; align-items:baseline; padding:4px 0; font-size:.88rem; }
+.card-srow .v{ font-family:"JetBrains Mono", monospace; font-variant-numeric:tabular-nums; }
+.card-srow.total .v{ font-size:1.15rem; font-weight:700; color:var(--accent-ink); }
+.card-srow.total{ border-top:1px solid var(--border); margin-top:6px; padding-top:10px; }
+.card-check{ display:flex; justify-content:space-between; align-items:center; padding:3px 0; font-size:.82rem; color:var(--ink-muted); }
+
+footer.page{ padding-top:32px; color:var(--ink-muted); font-size:.82rem; }
+a{ color:var(--accent-ink); }
+</style>
+
+<div class="wrap">
+  <header class="page">
+    <span class="eyebrow">급여계산 시스템 설계</span>
+    <h1>군포공장 급여계산 시스템</h1>
+    <p class="meta">원본 양식 분석 &middot; <span class="mono">03월 급여(군포공장)(수정1).xlsx</span> &middot; 시트 <span class="mono">군포</span> · 51개 컬럼(A~AY) · 2026-09-13</p>
+  </header>
+
+  <section id="overview">
+    <h2>개요</h2>
+    <p class="section-desc">
+      원본 엑셀은 직원 1명당 51개 컬럼을 가로로 나열한 급여대장 형식이며, 시급·지급총액·공제액계·실수령액과
+      두 가지 검증열(시급점검, 월통상임금점검)이 수식으로 연결되어 있습니다. 아래는 이 구조를 그대로 계승하되
+      다수 직원·매월 반복 계산에 견디는 시스템으로 재설계한 내용입니다.
+    </p>
+    <ul class="note-list">
+      <li><span class="note-mark">●</span><span><strong>입력 vs 계산 분리</strong> — 원본에서 실제 수식이 걸린 열은 13개뿐이고 나머지(상여금·연차수당·가불·4대보험료 등)는 담당자가 매월 직접 입력하는 값입니다. 설계는 이 경계를 그대로 존중합니다.</span></li>
+      <li><span class="note-mark">●</span><span><strong>샘플 데이터 주의</strong> — 원본 3행(연번 1)의 성명 값이 <span class="mono">0</span>으로 되어 있어 테스트용 임시 데이터로 보입니다. 실 운영 전 실제 인적사항으로 교체가 필요합니다.</span></li>
+    </ul>
+  </section>
+
+  <section id="data-model">
+    <h2>데이터 모델</h2>
+    <p class="section-desc">원본 컬럼을 4개 논리 그룹으로 재구성했습니다. <span class="tag-input" style="padding:2px 7px;border-radius:6px;">입력</span>은 매월 담당자가 넣는 값, <span class="tag-calc" style="padding:2px 7px;border-radius:6px;">계산</span>은 수식으로 자동 산출되는 값입니다.</p>
+
+    <div class="model-grid">
+      <div class="model-card">
+        <h3>직원 마스터</h3>
+        <p class="card-note">1회 등록 후 변동 시에만 수정 (A~H열)</p>
+        <ul class="field-list">
+          <li><span class="field-name">사번 / 성명 / 성별</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">부문 / 부서 / 직책</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">부양가족수</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">월소정근로시간 (기본 209H)</span><span class="field-tag tag-input">입력</span></li>
+        </ul>
+      </div>
+
+      <div class="model-card">
+        <h3>급여 기준정보</h3>
+        <p class="card-note">연봉 계약 변경 시에만 수정 (I~M열)</p>
+        <ul class="field-list">
+          <li><span class="field-name">연봉</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">기본급 / 직무수당</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">시급</span><span class="field-tag tag-calc">계산</span></li>
+          <li><span class="field-name">고정시급 / 통상임금</span><span class="field-tag tag-calc">계산</span></li>
+        </ul>
+      </div>
+
+      <div class="model-card">
+        <h3>월별 근태·실적 입력</h3>
+        <p class="card-note">매월 갱신 (N~AK열)</p>
+        <ul class="field-list">
+          <li><span class="field-name">보전수당 / 토요수당 / 기타제수당</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">연장근로 금액</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">휴일근로시간 / 공제시간</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">휴일근로 / 공제분 금액</span><span class="field-tag tag-calc">계산</span></li>
+          <li><span class="field-name">상여금(현금·현물) / 학자금 / 연차수당</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">연말정산 / 사우회비 / 가불(급여·식대)</span><span class="field-tag tag-input">입력</span></li>
+        </ul>
+      </div>
+
+      <div class="model-card">
+        <h3>법정 공제 &amp; 산출 결과</h3>
+        <p class="card-note">요율표 연동 필요 (AL~AY열)</p>
+        <ul class="field-list">
+          <li><span class="field-name">소득세 (간이세액표 조회)</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">국민연금 / 건강보험 / 장기요양보험</span><span class="field-tag tag-input">입력</span></li>
+          <li><span class="field-name">주민세 / 고용보험료</span><span class="field-tag tag-calc">계산</span></li>
+          <li><span class="field-name">지급총액 / 공제액계 / 실수령액</span><span class="field-tag tag-calc">계산</span></li>
+          <li><span class="field-name">시급확인 / 임금확인 (검증)</span><span class="field-tag tag-calc">계산</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="pipeline">
+    <h2>계산 로직 (원본 수식 그대로)</h2>
+    <p class="section-desc">각 단계는 이전 단계의 결과를 참조하므로 반드시 이 순서로 계산해야 합니다. 반올림 규칙은 원본과 동일하게 10원 단위를 사용합니다.</p>
+    <ol class="pipeline">
+      <li>
+        <div class="step-title">시급 산출</div>
+        <div class="formula mono">시급 = (기본급 + 직무수당) ÷ 월소정근로시간</div>
+        <div class="step-desc">연봉 대신 실제 기본급 구성으로 시급을 역산합니다.</div>
+      </li>
+      <li>
+        <div class="step-title">보전시간 합계</div>
+        <div class="formula mono">합계 = 기본급 + 직무수당 + 보전수당</div>
+      </li>
+      <li>
+        <div class="step-title">휴일근로 · 공제분 (시간 기반 자동계산)</div>
+        <div class="formula mono">휴일근로 = ROUNDUP(시급 × 휴일근로시간, 10원)</div>
+        <div class="formula mono">공제분 = ROUNDDOWN(시급 × 공제시간, 10원)</div>
+        <div class="step-desc">유일하게 시간 입력값에서 금액을 자동 산출하는 두 항목입니다.</div>
+      </li>
+      <li>
+        <div class="step-title">지급총액</div>
+        <div class="formula mono">지급총액 = 합계 + 토요수당 + 기타제수당 + 연장근로 + 휴일근로 + 공제분 + 상여금(현금) + 상여금(현물) + 학자금 + 연차수당</div>
+      </li>
+      <li>
+        <div class="step-title">법정 공제 자동분 산출</div>
+        <div class="formula mono">주민세 = TRUNC(소득세 × 10%, 10원)</div>
+        <div class="formula mono">고용보험료 = TRUNC(지급총액 × 0.9%, 10원)</div>
+        <div class="step-desc">소득세·국민연금·건강보험·장기요양보험은 매년 개정되는 법정 요율표 조회값을 그대로 입력합니다.</div>
+      </li>
+      <li>
+        <div class="step-title">공제액계 · 실수령액</div>
+        <div class="formula mono">공제액계 = 연말정산 + 사우회비 + 가불 + 가불(식대) + 소득세 + 주민세 + 국민연금 + 건강보험 + 장기요양보험 + 고용보험료</div>
+        <div class="formula mono">실수령액 = 지급총액 − 공제액계</div>
+      </li>
+      <li>
+        <div class="step-title">검증: 시급점검 · 월통상임금점검</div>
+        <div class="formula mono">고정시급 = 연봉 ÷ 12 ÷ 월소정근로시간 → 시급확인 = 시급 − 고정시급</div>
+        <div class="formula mono">통상임금 = 연봉 ÷ 12 → 임금확인 = (기본급 + 직무수당) − 통상임금</div>
+        <div class="step-desc">두 값 모두 0이어야 "기본급 구성이 연봉과 정합"함을 의미합니다. 0이 아니면 계약연봉과 기본급 입력이 어긋난 것입니다.</div>
+      </li>
+    </ol>
+  </section>
+
+  <section id="architecture">
+    <h2>시스템 아키텍처 제안</h2>
+    <p class="section-desc">엑셀의 수식 구조를 그대로 계산 엔진 규칙으로 옮기고, 법정 요율은 별도 테이블로 분리해 매년 개정에 대응합니다.</p>
+    <div class="arch">
+      <div class="arch-box">
+        <h4>① 마스터 입력</h4>
+        <p>직원정보 · 연봉계약</p>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">
+        <h4>② 월별 입력</h4>
+        <p>근태 · 상여 · 가불 · 4대보험 조회값</p>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">
+        <h4>③ 계산 엔진</h4>
+        <p>7단계 파이프라인 + 법정요율 테이블(연도별 버전관리)</p>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">
+        <h4>④ 산출물</h4>
+        <p>급여대장 · 개인별 급여명세서 · 검증 리포트</p>
+      </div>
+    </div>
+    <ul class="note-list">
+      <li><span class="note-mark">●</span><span><strong>법정요율 테이블 분리</strong> — 소득세 간이세액표, 국민연금·건강보험·장기요양보험·고용보험 요율은 연도가 바뀌면 갱신되므로 계산 로직과 분리된 참조 테이블(연도 버전 포함)로 관리합니다.</span></li>
+      <li><span class="note-mark">●</span><span><strong>검증 리포트 자동화</strong> — 시급확인·임금확인이 0이 아닌 직원을 매월 계산 직후 자동으로 목록화해 담당자가 먼저 확인하도록 합니다.</span></li>
+      <li><span class="note-mark">●</span><span><strong>엑셀 출력 유지</strong> — 회계팀이 익숙한 현재 급여대장 레이아웃(A~AY 컬럼 순서)으로 내보내기 기능을 유지해 전환 부담을 줄입니다.</span></li>
+    </ul>
+  </section>
+
+  <section id="excel-sheet">
+    <h2>입력 화면 — 2종 중 선택</h2>
+    <p class="section-desc">
+      같은 데이터를 두 가지 화면으로 제공합니다. 스프레드시트에 익숙한 담당자는 <strong>①엑셀형</strong>을,
+      한 사람씩 집중해서 확인하고 싶을 때는 <strong>②카드형</strong>을 선택하면 됩니다.
+      두 화면은 같은 계산 로직을 공유하므로 어느 쪽에서 입력해도 결과는 동일합니다.
+    </p>
+    <ul class="note-list">
+      <li><span class="note-mark">●</span><span><strong>①엑셀형</strong> — 원본 급여대장과 동일한 컬럼 순서(A~AY)·색 구분·틀 고정을 그대로 재현해, 기존 엑셀과 나란히 대조하며 쓰기에 적합합니다.</span></li>
+      <li><span class="note-mark">●</span><span><strong>②카드형</strong> — 직원 1명씩 큼직한 글씨와 그룹으로 나눠 입력받아, 컬럼이 많은 화면이 낯선 담당자도 실수 없이 입력할 수 있습니다.</span></li>
+    </ul>
+
+    <div class="view-toggle">
+      <button class="view-btn active" id="tab-sheet" data-view="sheet" type="button"><span class="num">1</span>엑셀형 화면</button>
+      <button class="view-btn" id="tab-card" data-view="card" type="button"><span class="num">2</span>카드형 화면</button>
+    </div>
+
+    <div id="panel-sheet">
+      <p class="view-caption">원본 급여대장과 같은 컬럼 순서 · 색 구분 · 틀 고정을 그대로 재현한 화면입니다.</p>
+      <div class="sheet-breakout">
+        <div class="sheet-toolbar">
+          <span class="sheet-tab"><span class="dot"></span>군포</span>
+          <span class="sheet-legend">
+            <span><span class="legend-swatch legend-input"></span>직접 입력</span>
+            <span><span class="legend-swatch legend-calc"></span>자동 계산</span>
+          </span>
+          <button class="sheet-addrow" id="btn-add-row-sheet" type="button">+ 직원 행 추가</button>
+        </div>
+        <div class="sheet-scroll">
+          <table class="sheet" id="payroll-sheet">
+            <thead id="sheet-head"></thead>
+            <tbody id="sheet-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <p class="sample-note">예시 3행(박민수)은 <strong>기본급+직무수당이 연봉÷12보다 50,000원 많도록</strong> 일부러 어긋나게 넣은 데이터입니다 — 임금확인·시급확인 셀이 즉시 빨간색으로 표시되는지 확인해 보세요.</p>
+    </div>
+
+    <div id="panel-card" hidden>
+      <p class="view-caption">직원 1명씩 화면 가득 펼쳐놓고 입력·확인하는 화면입니다. 엑셀형과 동일한 데이터를 공유합니다.</p>
+      <div class="card-toolbar">
+        <div class="card-picker">
+          직원 선택
+          <select id="card-select"></select>
+        </div>
+        <div class="card-nav">
+          <button id="card-prev" type="button">◀ 이전</button>
+          <button id="card-next" type="button">다음 ▶</button>
+        </div>
+        <button class="sheet-addrow" id="btn-add-row-card" type="button">+ 직원 추가</button>
+      </div>
+      <div class="card-shell">
+        <div class="card-grid" id="card-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page">
+    <p>원본 양식: <span class="mono">03월 급여(군포공장)(수정1).xlsx</span> (시트 "군포", A1:AY3) 분석 기반 설계안입니다. 법정 요율표는 매년 노동부·국민연금공단·건강보험공단 고시값으로 갱신이 필요합니다.</p>
+  </footer>
+</div>
+
+<script>
+/* ---- 원본 A~AY 컬럼을 그대로 옮긴 열 정의 ---- */
+const COLUMNS = [
+  { key:'no',            label:'연번',        type:'text',   group:'인적사항', groupSpan:8, width:44 },
+  { key:'empNo',          label:'사번',        type:'text',   width:60 },
+  { key:'name',           label:'성명',        type:'text',   width:72 },
+  { key:'gender',         label:'성별',        type:'select', width:48 },
+  { key:'division',       label:'부문',        type:'text',   width:58 },
+  { key:'dept',           label:'부서',        type:'text',   width:72 },
+  { key:'position',       label:'직책',        type:'text',   width:88 },
+  { key:'dependents',     label:'부양가족',    type:'number', width:58 },
+  { key:'stdHours',       label:'월소정근로시간', type:'number', width:70 },
+  { key:'hourly',         label:'시급',        type:'calc',   width:68 },
+  { key:'annualSalary',   label:'연봉',        type:'number', width:96 },
+  { key:'baseSalary',     label:'기본급',      type:'number', group:'기본급여', groupSpan:2, width:90 },
+  { key:'jobAllow',       label:'직무수당',    type:'number', width:80 },
+  { key:'retentionHours', label:'보전시간(H)', type:'number', rowspanLabel:true, step:0.5, width:60 },
+  { key:'retentionAllow', label:'보전수당',    type:'number', rowspanLabel:true, width:78 },
+  { key:'subtotal',       label:'합계',        type:'calc',   rowspanLabel:true, width:86 },
+  { key:'satDayHours',    label:'주간토요(H)', type:'number', rowspanLabel:true, step:0.5, width:60 },
+  { key:'satNightHours',  label:'야간토요(H)', type:'number', rowspanLabel:true, step:0.5, width:60 },
+  { key:'satAllow',       label:'토요수당(주+야간)', type:'number', rowspanLabel:true, width:82 },
+  { key:'nightOtHours',   label:'야간연장(H)', type:'number', rowspanLabel:true, step:0.5, width:60 },
+  { key:'etcAllow',       label:'기타제수당(야간)', type:'number', rowspanLabel:true, width:80 },
+  { key:'otHours',        label:'연장시간',    type:'number', step:0.5, width:60 },
+  { key:'otPay',          label:'연장근로',    type:'number', group:'제수당', groupSpan:5, width:78 },
+  { key:'holidayHours',   label:'휴일근로시간', type:'number', step:0.5, width:68 },
+  { key:'holidayPay',     label:'휴일근로',    type:'calc',   width:78 },
+  { key:'deductHours',    label:'공제시간',    type:'number', step:0.5, width:60 },
+  { key:'deductPay',      label:'공제분',      type:'calc',   width:78 },
+  { key:'bonusCash',      label:'상여금(현금)', type:'number', width:82 },
+  { key:'bonusKind',      label:'상여금(현물)', type:'number', width:82 },
+  { key:'tuition',        label:'학자금',      type:'number', width:72 },
+  { key:'annualLeavePay', label:'연차수당',    type:'number', width:78 },
+  { key:'grossPay',       label:'지급총액',    type:'calc',   rowspanLabel:true, width:98 },
+  { key:'yearEndTax',     label:'연말정산',    type:'number', width:90 },
+  { key:'clubFee',        label:'사우회비',    type:'number', width:70 },
+  { key:'advance',        label:'가불',        type:'number', width:66 },
+  { key:'advanceMeal',    label:'가불(식대)',  type:'number', width:72 },
+  { key:'incomeTax',      label:'소득세',      type:'number', width:68 },
+  { key:'localTax',       label:'주민세',      type:'calc',   width:68 },
+  { key:'pension',        label:'국민연금',    type:'number', width:80 },
+  { key:'healthIns',      label:'건강보험',    type:'number', width:80 },
+  { key:'ltcIns',         label:'장기요양보험', type:'number', width:90 },
+  { key:'empIns',         label:'고용보험료',  type:'calc',   width:80 },
+  { key:'totalDeduct',    label:'공제액계',    type:'calc',   width:90 },
+  { key:'netPay',         label:'실수령액',    type:'calc',   rowspanLabel:true, width:98 },
+  { spacer:true, width:14 },
+  { key:'fixedHourly',    label:'고정시급',    type:'calc',   group:'시급점검', groupSpan:2, width:80 },
+  { key:'hourlyCheck',    label:'시급확인',    type:'calc',   isCheck:true, width:80 },
+  { spacer:true, width:14 },
+  { key:'ordinaryWage',   label:'통상임금',    type:'calc',   group:'월통상임금점검', groupSpan:2, width:90 },
+  { key:'wageCheck',      label:'임금확인',    type:'calc',   isCheck:true, width:80 },
+];
+
+const FROZEN = ['no','empNo','name'];
+let frzLeft = 0;
+const FROZEN_LEFT = {};
+FROZEN.forEach(key => {
+  const col = COLUMNS.find(c => c.key === key);
+  FROZEN_LEFT[key] = frzLeft;
+  frzLeft += col.width;
+});
+
+const ROWS = [
+  { no:1, empNo:'1001', name:'홍길동', gender:'남', division:'관리', dept:'관리부', position:'팀장(부장)',
+    dependents:2, stdHours:209, annualSalary:26986080, baseSalary:2248840, jobAllow:0,
+    retentionHours:0, retentionAllow:0, satDayHours:0, satNightHours:0, satAllow:0, nightOtHours:0, etcAllow:0,
+    otHours:0, otPay:0, holidayHours:0, deductHours:0,
+    bonusCash:0, bonusKind:0, tuition:0, annualLeavePay:0,
+    yearEndTax:0, clubFee:0, advance:0, advanceMeal:0,
+    incomeTax:11360, pension:100830, healthIns:77380, ltcIns:10160 },
+  { no:2, empNo:'1002', name:'김영희', gender:'여', division:'생산', dept:'생산1팀', position:'사원',
+    dependents:1, stdHours:209, annualSalary:31800000, baseSalary:2650000, jobAllow:0,
+    retentionHours:0, retentionAllow:0, satDayHours:0, satNightHours:0, satAllow:30000, nightOtHours:0, etcAllow:0,
+    otHours:10, otPay:143000, holidayHours:0, deductHours:0,
+    bonusCash:0, bonusKind:0, tuition:0, annualLeavePay:0,
+    yearEndTax:0, clubFee:5000, advance:0, advanceMeal:0,
+    incomeTax:34700, pension:119250, healthIns:104920, ltcIns:13590 },
+  { no:3, empNo:'1003', name:'박민수', gender:'남', division:'생산', dept:'생산2팀', position:'반장',
+    dependents:3, stdHours:209, annualSalary:28800000, baseSalary:2400000, jobAllow:50000,
+    retentionHours:0, retentionAllow:0, satDayHours:0, satNightHours:0, satAllow:0, nightOtHours:0, etcAllow:0,
+    otHours:0, otPay:0, holidayHours:5, deductHours:0,
+    bonusCash:0, bonusKind:0, tuition:0, annualLeavePay:0,
+    yearEndTax:0, clubFee:5000, advance:0, advanceMeal:0,
+    incomeTax:20500, pension:108000, healthIns:89400, ltcIns:11570 },
+];
+
+const roundUp10 = n => Math.ceil(n/10)*10;
+const roundDown10 = n => Math.floor(n/10)*10;
+const trunc10 = n => Math.trunc(n/10)*10;
+const fmt = n => Math.round(n || 0).toLocaleString('ko-KR');
+
+function colDef(key){ return COLUMNS.find(c => c.key === key); }
+
+/* ---- 순수 계산 함수: 두 화면이 동일한 로직을 공유 ---- */
+function calc(row){
+  const stdHours = row.stdHours || 1;
+  const hourly = (row.baseSalary + row.jobAllow) / stdHours;
+  const subtotal = row.baseSalary + row.jobAllow + row.retentionAllow;
+  const holidayPay = roundUp10(hourly * row.holidayHours);
+  const deductPay = roundDown10(hourly * row.deductHours);
+  const grossPay = subtotal + row.satAllow + row.etcAllow + row.otPay + holidayPay + deductPay
+                 + row.bonusCash + row.bonusKind + row.tuition + row.annualLeavePay;
+  const localTax = trunc10(row.incomeTax * 0.1);
+  const empIns = trunc10(grossPay * 0.009);
+  const totalDeduct = row.yearEndTax + row.clubFee + row.advance + row.advanceMeal
+                    + row.incomeTax + localTax + row.pension + row.healthIns + row.ltcIns + empIns;
+  const netPay = grossPay - totalDeduct;
+  const fixedHourly = row.annualSalary / 12 / stdHours;
+  const hourlyCheck = hourly - fixedHourly;
+  const ordinaryWage = row.annualSalary / 12;
+  const wageCheck = (row.baseSalary + row.jobAllow) - ordinaryWage;
+  return { hourly, subtotal, holidayPay, deductPay, grossPay, localTax, empIns,
+           totalDeduct, netPay, fixedHourly, hourlyCheck, ordinaryWage, wageCheck };
+}
+
+function blankRow(no){
+  const row = { no, empNo:'', name:'', gender:'남', division:'', dept:'', position:'', dependents:0, stdHours:209 };
+  COLUMNS.forEach(col => { if (!col.spacer && col.type !== 'calc' && !(col.key in row)) row[col.key] = 0; });
+  return row;
+}
+
+/* ================= 화면 1: 엑셀형 ================= */
+function buildHead(){
+  const thead = document.getElementById('sheet-head');
+  const row1 = document.createElement('tr');
+  const row2 = document.createElement('tr');
+  let skip = 0;
+  COLUMNS.forEach(col => {
+    if (skip > 0){ skip--; return; }
+    if (col.spacer){
+      const th = document.createElement('th');
+      th.className = 'spacer'; th.rowSpan = 2;
+      th.style.width = col.width + 'px';
+      row1.appendChild(th);
+      return;
+    }
+    if (col.rowspanLabel){
+      const th = document.createElement('th');
+      th.rowSpan = 2; th.textContent = col.label;
+      th.style.width = col.width + 'px';
+      row1.appendChild(th);
+      return;
+    }
+    if (col.group){
+      const th = document.createElement('th');
+      th.colSpan = col.groupSpan; th.textContent = col.group;
+      row1.appendChild(th);
+      skip = col.groupSpan - 1;
+      return;
+    }
+    row1.appendChild(document.createElement('th'));
+  });
+  COLUMNS.forEach(col => {
+    if (col.spacer || col.rowspanLabel) return;
+    const th = document.createElement('th');
+    th.textContent = col.label;
+    th.style.width = col.width + 'px';
+    if (FROZEN.includes(col.key)){
+      th.classList.add('frz');
+      th.style.setProperty('--frz-left', FROZEN_LEFT[col.key] + 'px');
+      if (col.key === 'name') th.classList.add('frz-edge');
+    }
+    row2.appendChild(th);
+  });
+  thead.appendChild(row1);
+  thead.appendChild(row2);
+}
+
+function buildSheetRow(data, index){
+  const tr = document.createElement('tr');
+  tr.dataset.index = index;
+  COLUMNS.forEach(col => {
+    if (col.spacer){
+      const td = document.createElement('td');
+      td.className = 'spacer';
+      tr.appendChild(td);
+      return;
+    }
+    const td = document.createElement('td');
+    if (col.type === 'calc'){
+      td.className = 'calc';
+      td.dataset.key = col.key;
+      tr.appendChild(td);
+      return;
+    }
+    let field;
+    if (col.type === 'select'){
+      field = document.createElement('select');
+      ['남','여'].forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v; opt.textContent = v;
+        if (data[col.key] === v) opt.selected = true;
+        field.appendChild(opt);
+      });
+    } else {
+      field = document.createElement('input');
+      field.type = col.type === 'number' ? 'number' : 'text';
+      if (col.step) field.step = col.step;
+      field.value = data[col.key] ?? (col.type === 'number' ? 0 : '');
+      if (col.type === 'text') field.classList.add('txt');
+    }
+    field.dataset.key = col.key;
+    td.appendChild(field);
+    if (FROZEN.includes(col.key)){
+      td.classList.add('frz');
+      td.style.setProperty('--frz-left', FROZEN_LEFT[col.key] + 'px');
+      if (col.key === 'name') td.classList.add('frz-edge');
+    }
+    tr.appendChild(td);
+  });
+  return tr;
+}
+
+function updateSheetCalc(tr, row){
+  const c = calc(row);
+  const set = (key, isCheck) => {
+    const td = tr.querySelector('td.calc[data-key="' + key + '"]');
+    if (!td) return;
+    td.textContent = fmt(c[key]);
+    if (isCheck) td.classList.toggle('bad', Math.abs(c[key]) >= 1);
+  };
+  ['hourly','subtotal','holidayPay','deductPay','localTax','empIns','grossPay','totalDeduct','netPay','fixedHourly','ordinaryWage']
+    .forEach(k => set(k));
+  set('hourlyCheck', true);
+  set('wageCheck', true);
+}
+
+function renderSheetFull(){
+  const body = document.getElementById('sheet-body');
+  body.innerHTML = '';
+  ROWS.forEach((r, i) => {
+    const tr = buildSheetRow(r, i);
+    body.appendChild(tr);
+    updateSheetCalc(tr, r);
+  });
+}
+
+/* ================= 화면 2: 카드형 ================= */
+const CARD_GROUPS = [
+  { title:'인적사항', keys:['empNo','name','gender','division','dept','position','dependents'] },
+  { title:'급여 기준', keys:['stdHours','annualSalary','baseSalary','jobAllow'] },
+  { title:'근태 · 제수당 입력', keys:['retentionAllow','satAllow','etcAllow','otHours','otPay','holidayHours','deductHours'] },
+  { title:'상여 · 기타지급', keys:['bonusCash','bonusKind','tuition','annualLeavePay'] },
+  { title:'공제 입력 (법정 요율표 조회값)', keys:['yearEndTax','clubFee','advance','advanceMeal','incomeTax','pension','healthIns','ltcIns'] },
+];
+
+function renderCardSelect(){
+  const sel = document.getElementById('card-select');
+  sel.innerHTML = '';
+  ROWS.forEach((r, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = (r.empNo || '(사번 미입력)') + ' · ' + (r.name || '이름 미입력');
+    if (i === cardIndex) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function renderCard(){
+  if (cardIndex >= ROWS.length) cardIndex = ROWS.length - 1;
+  if (cardIndex < 0) cardIndex = 0;
+  renderCardSelect();
+  const row = ROWS[cardIndex];
+  const body = document.getElementById('card-body');
+  body.innerHTML = '';
+
+  const inputsCol = document.createElement('div');
+  CARD_GROUPS.forEach(group => {
+    const g = document.createElement('div'); g.className = 'card-fgroup';
+    const h = document.createElement('h4'); h.textContent = group.title; g.appendChild(h);
+    const frow = document.createElement('div'); frow.className = 'card-frow';
+    group.keys.forEach(key => {
+      const col = colDef(key);
+      const label = document.createElement('label'); label.className = 'card-f';
+      label.appendChild(document.createTextNode(col.label));
+      let field;
+      if (col.type === 'select'){
+        field = document.createElement('select');
+        ['남','여'].forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v; opt.textContent = v;
+          if (row[key] === v) opt.selected = true;
+          field.appendChild(opt);
+        });
+      } else {
+        field = document.createElement('input');
+        field.type = col.type === 'number' ? 'number' : 'text';
+        if (col.step) field.step = col.step;
+        field.value = row[key] ?? (col.type === 'number' ? 0 : '');
+        if (col.type === 'text') field.classList.add('txt');
+      }
+      field.dataset.key = key;
+      field.addEventListener('input', () => {
+        row[key] = field.tagName === 'SELECT' ? field.value : (Number(field.value) || 0);
+        updateCardCalc(row);
+        const sheetTr = document.querySelector('#sheet-body tr[data-index="' + cardIndex + '"]');
+        if (sheetTr) updateSheetCalc(sheetTr, row);
+        if (key === 'empNo' || key === 'name') renderCardSelect();
+      });
+      label.appendChild(field);
+      frow.appendChild(label);
+    });
+    g.appendChild(frow);
+    inputsCol.appendChild(g);
+  });
+  body.appendChild(inputsCol);
+
+  const summary = document.createElement('div'); summary.className = 'card-summary';
+  summary.innerHTML =
+    '<div class="card-sblock"><h5>기준 산출</h5>' +
+      '<div class="card-srow"><span>시급</span><span class="v" data-c="hourly">-</span></div>' +
+      '<div class="card-srow"><span>보전시간 합계</span><span class="v" data-c="subtotal">-</span></div>' +
+      '<div class="card-srow"><span>휴일근로 (자동)</span><span class="v" data-c="holidayPay">-</span></div>' +
+      '<div class="card-srow"><span>공제분 (자동)</span><span class="v" data-c="deductPay">-</span></div></div>' +
+    '<div class="card-sblock"><h5>지급 · 공제</h5>' +
+      '<div class="card-srow"><span>주민세 (자동)</span><span class="v" data-c="localTax">-</span></div>' +
+      '<div class="card-srow"><span>고용보험료 (자동)</span><span class="v" data-c="empIns">-</span></div>' +
+      '<div class="card-srow total"><span>지급총액</span><span class="v" data-c="grossPay">-</span></div>' +
+      '<div class="card-srow"><span>공제액계</span><span class="v" data-c="totalDeduct">-</span></div>' +
+      '<div class="card-srow total"><span>실수령액</span><span class="v" data-c="netPay">-</span></div></div>' +
+    '<div class="card-sblock"><h5>검증</h5>' +
+      '<div class="card-check"><span>시급확인</span><span class="badge badge-good" data-chk="hourlyCheck"><span class="badge-dot"></span>0</span></div>' +
+      '<div class="card-check"><span>임금확인</span><span class="badge badge-good" data-chk="wageCheck"><span class="badge-dot"></span>0</span></div></div>';
+  body.appendChild(summary);
+
+  updateCardCalc(row);
+}
+
+function updateCardCalc(row){
+  const c = calc(row);
+  document.querySelectorAll('#card-body [data-c]').forEach(el => { el.textContent = fmt(c[el.dataset.c]); });
+  document.querySelectorAll('#card-body [data-chk]').forEach(el => {
+    const diff = c[el.dataset.chk];
+    const ok = Math.abs(diff) < 1;
+    el.className = 'badge ' + (ok ? 'badge-good' : 'badge-bad');
+    el.innerHTML = '<span class="badge-dot"></span>' + (ok ? '정상 (0)' : ('불일치 (' + fmt(diff) + ')'));
+  });
+}
+
+/* ================= 화면 전환 · 공용 동작 ================= */
+let activeView = 'sheet';
+let cardIndex = 0;
+
+function showView(view){
+  activeView = view;
+  document.getElementById('panel-sheet').hidden = view !== 'sheet';
+  document.getElementById('panel-card').hidden = view !== 'card';
+  document.getElementById('tab-sheet').classList.toggle('active', view === 'sheet');
+  document.getElementById('tab-card').classList.toggle('active', view === 'card');
+  if (view === 'sheet') renderSheetFull(); else renderCard();
+}
+
+function addRow(){
+  ROWS.push(blankRow(ROWS.length + 1));
+  renderSheetFull();
+  renderCardSelect();
+}
+
+buildHead();
+renderSheetFull();
+renderCardSelect();
+
+document.getElementById('sheet-body').addEventListener('input', e => {
+  const tr = e.target.closest('tr');
+  if (!tr) return;
+  const idx = Number(tr.dataset.index);
+  const key = e.target.dataset.key;
+  ROWS[idx][key] = e.target.tagName === 'SELECT' ? e.target.value : (Number(e.target.value) || 0);
+  updateSheetCalc(tr, ROWS[idx]);
+});
+
+document.getElementById('tab-sheet').addEventListener('click', () => showView('sheet'));
+document.getElementById('tab-card').addEventListener('click', () => showView('card'));
+document.getElementById('btn-add-row-sheet').addEventListener('click', addRow);
+document.getElementById('btn-add-row-card').addEventListener('click', () => { addRow(); cardIndex = ROWS.length - 1; renderCard(); });
+document.getElementById('card-select').addEventListener('change', e => { cardIndex = Number(e.target.value); renderCard(); });
+document.getElementById('card-prev').addEventListener('click', () => { cardIndex = (cardIndex - 1 + ROWS.length) % ROWS.length; renderCard(); });
+document.getElementById('card-next').addEventListener('click', () => { cardIndex = (cardIndex + 1) % ROWS.length; renderCard(); });
+</script>
