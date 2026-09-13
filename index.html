@@ -174,7 +174,7 @@ h2{
 }
 .sheet-toolbar{
   display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
-  max-width:1440px; margin:0 auto 0; padding:0 4px;
+  max-width:1680px; margin:0 auto 0; padding:0 4px;
 }
 .sheet-tab{
   display:inline-flex; align-items:center; gap:8px;
@@ -196,26 +196,26 @@ h2{
 .sheet-addrow:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 
 .sheet-scroll{
-  max-width:1440px; margin:6px auto 0; overflow:auto; max-height:72vh;
+  max-width:1680px; margin:6px auto 0; overflow:auto; max-height:76vh;
   border:1px solid var(--border); border-radius:0 8px 8px 8px; background:var(--surface);
 }
-table.sheet{ border-collapse:separate; border-spacing:0; width:max-content; font-size:.76rem; }
+table.sheet{ border-collapse:separate; border-spacing:0; width:max-content; font-size:.94rem; }
 table.sheet th, table.sheet td{
   border-right:1px solid var(--border); border-bottom:1px solid var(--border);
-  height:26px; padding:0 5px; white-space:nowrap;
+  height:36px; padding:0 7px; white-space:nowrap;
 }
 table.sheet thead th{
   background:var(--surface-2); color:var(--ink-muted); font-weight:700;
   text-align:center; position:sticky; z-index:3;
 }
 table.sheet thead tr:nth-child(1) th{ top:0; }
-table.sheet thead tr:nth-child(2) th{ top:27px; }
+table.sheet thead tr:nth-child(2) th{ top:37px; }
 table.sheet td.spacer, table.sheet th.spacer{
-  border:none; background:var(--bg); width:12px; min-width:12px; padding:0;
+  border:none; background:var(--bg); width:16px; min-width:16px; padding:0;
 }
 table.sheet td input, table.sheet td select{
-  width:100%; height:24px; border:0; background:transparent; color:var(--accent-ink);
-  font: inherit; font-family:"JetBrains Mono", monospace; text-align:right; padding:0 2px;
+  width:100%; height:32px; border:0; background:transparent; color:var(--accent-ink);
+  font: inherit; font-family:"JetBrains Mono", monospace; text-align:right; padding:0 4px;
 }
 table.sheet td select{ font-family:"Noto Sans KR", sans-serif; text-align:left; color:var(--ink); }
 table.sheet td input.txt{ text-align:left; color:var(--ink); font-family:"Noto Sans KR", sans-serif; }
@@ -235,7 +235,7 @@ table.sheet tbody tr:hover td.calc.bad{ background:var(--bad-soft); }
 thead .frz{ z-index:4; background:var(--surface-2); }
 .frz-edge{ box-shadow: 2px 0 4px -2px rgba(0,0,0,.28); }
 
-.sample-note{ max-width:1440px; margin:10px auto 0; font-size:.8rem; color:var(--ink-muted); }
+.sample-note{ max-width:1680px; margin:10px auto 0; font-size:.86rem; color:var(--ink-muted); }
 .sample-note strong{ color:var(--bad); }
 
 /* ---------- View switcher ---------- */
@@ -275,20 +275,20 @@ thead .frz{ z-index:4; background:var(--surface-2); }
 .card-nav button:hover{ background:var(--surface-2); }
 .card-shell{
   background:var(--surface); border:1px solid var(--border); border-radius:10px;
-  box-shadow:var(--shadow); padding:22px;
+  box-shadow:var(--shadow); padding:30px;
 }
-.card-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:26px; align-items:start; }
+.card-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:32px; align-items:start; }
 @media (max-width:760px){ .card-grid{ grid-template-columns: 1fr; } }
-.card-fgroup{ margin-bottom:18px; }
+.card-fgroup{ margin-bottom:22px; }
 .card-fgroup h4{
-  font-size:.76rem; text-transform:uppercase; letter-spacing:.06em;
-  color:var(--ink-muted); margin:0 0 10px; font-weight:700;
+  font-size:.86rem; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--ink-muted); margin:0 0 12px; font-weight:700;
 }
-.card-frow{ display:grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap:10px; margin-bottom:8px; }
-label.card-f{ display:flex; flex-direction:column; gap:4px; font-size:.8rem; color:var(--ink-muted); }
+.card-frow{ display:grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap:12px; margin-bottom:10px; }
+label.card-f{ display:flex; flex-direction:column; gap:5px; font-size:.9rem; color:var(--ink-muted); }
 label.card-f input, label.card-f select{
-  font:inherit; font-family:"JetBrains Mono", monospace; font-size:.86rem;
-  padding:7px 9px; border-radius:7px; border:1px solid var(--border);
+  font:inherit; font-family:"JetBrains Mono", monospace; font-size:1.05rem;
+  padding:10px 12px; border-radius:8px; border:1px solid var(--border);
   background:var(--bg); color:var(--accent-ink);
 }
 label.card-f select{ font-family:"Noto Sans KR", sans-serif; color:var(--ink); }
@@ -296,13 +296,13 @@ label.card-f input.txt{ font-family:"Noto Sans KR", sans-serif; color:var(--ink)
 label.card-f input:focus, label.card-f select:focus{ outline:2px solid var(--accent); outline-offset:1px; }
 
 .card-summary{ position:sticky; top:16px; }
-.card-sblock{ background:var(--surface-2); border-radius:10px; padding:14px 16px; margin-bottom:12px; }
-.card-sblock h5{ margin:0 0 8px; font-size:.78rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.05em; }
-.card-srow{ display:flex; justify-content:space-between; align-items:baseline; padding:4px 0; font-size:.88rem; }
+.card-sblock{ background:var(--surface-2); border-radius:10px; padding:18px 20px; margin-bottom:14px; }
+.card-sblock h5{ margin:0 0 10px; font-size:.86rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.05em; }
+.card-srow{ display:flex; justify-content:space-between; align-items:baseline; padding:5px 0; font-size:1.02rem; }
 .card-srow .v{ font-family:"JetBrains Mono", monospace; font-variant-numeric:tabular-nums; }
-.card-srow.total .v{ font-size:1.15rem; font-weight:700; color:var(--gold-ink); }
-.card-srow.total{ border-top:1px solid var(--border); margin-top:6px; padding-top:10px; }
-.card-check{ display:flex; justify-content:space-between; align-items:center; padding:3px 0; font-size:.82rem; color:var(--ink-muted); }
+.card-srow.total .v{ font-size:1.4rem; font-weight:700; color:var(--gold-ink); }
+.card-srow.total{ border-top:1px solid var(--border); margin-top:8px; padding-top:12px; }
+.card-check{ display:flex; justify-content:space-between; align-items:center; padding:4px 0; font-size:.94rem; color:var(--ink-muted); }
 
 /* ---------- Admin dashboard ---------- */
 .dash-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:28px; }
@@ -871,56 +871,56 @@ CREATE TABLE payroll_details (
 <script>
 /* ---- 원본 A~AY 컬럼을 그대로 옮긴 열 정의 ---- */
 const COLUMNS = [
-  { key:'no',            label:'연번',        type:'text',   group:'인적사항', groupSpan:8, width:44 },
-  { key:'empNo',          label:'사번',        type:'text',   width:60 },
-  { key:'name',           label:'성명',        type:'text',   width:72 },
-  { key:'gender',         label:'성별',        type:'select', width:48 },
-  { key:'division',       label:'부문',        type:'text',   width:58 },
-  { key:'dept',           label:'부서',        type:'text',   width:72 },
-  { key:'position',       label:'직책',        type:'text',   width:88 },
-  { key:'dependents',     label:'부양가족',    type:'number', width:58 },
-  { key:'stdHours',       label:'월소정근로시간', type:'number', width:70 },
-  { key:'hourly',         label:'시급',        type:'calc',   width:68 },
-  { key:'annualSalary',   label:'연봉',        type:'number', width:96 },
-  { key:'baseSalary',     label:'기본급',      type:'number', group:'기본급여', groupSpan:2, width:90 },
-  { key:'jobAllow',       label:'직무수당',    type:'number', width:80 },
-  { key:'retentionHours', label:'보전시간(H)', type:'number', rowspanLabel:true, step:0.5, width:60 },
-  { key:'retentionAllow', label:'보전수당',    type:'number', rowspanLabel:true, width:78 },
-  { key:'subtotal',       label:'합계',        type:'calc',   rowspanLabel:true, width:86 },
-  { key:'satDayHours',    label:'주간토요(H)', type:'number', rowspanLabel:true, step:0.5, width:60 },
-  { key:'satNightHours',  label:'야간토요(H)', type:'number', rowspanLabel:true, step:0.5, width:60 },
-  { key:'satAllow',       label:'토요수당(주+야간)', type:'number', rowspanLabel:true, width:82 },
-  { key:'nightOtHours',   label:'야간연장(H)', type:'number', rowspanLabel:true, step:0.5, width:60 },
-  { key:'etcAllow',       label:'기타제수당(야간)', type:'number', rowspanLabel:true, width:80 },
-  { key:'otHours',        label:'연장시간',    type:'number', step:0.5, width:60 },
-  { key:'otPay',          label:'연장근로',    type:'number', group:'제수당', groupSpan:5, width:78 },
-  { key:'holidayHours',   label:'휴일근로시간', type:'number', step:0.5, width:68 },
-  { key:'holidayPay',     label:'휴일근로',    type:'calc',   width:78 },
-  { key:'deductHours',    label:'공제시간',    type:'number', step:0.5, width:60 },
-  { key:'deductPay',      label:'공제분',      type:'calc',   width:78 },
-  { key:'bonusCash',      label:'상여금(현금)', type:'number', width:82 },
-  { key:'bonusKind',      label:'상여금(현물)', type:'number', width:82 },
-  { key:'tuition',        label:'학자금',      type:'number', width:72 },
-  { key:'annualLeavePay', label:'연차수당',    type:'number', width:78 },
-  { key:'grossPay',       label:'지급총액',    type:'calc',   rowspanLabel:true, width:98 },
-  { key:'yearEndTax',     label:'연말정산',    type:'number', width:90 },
-  { key:'clubFee',        label:'사우회비',    type:'number', width:70 },
-  { key:'advance',        label:'가불',        type:'number', width:66 },
-  { key:'advanceMeal',    label:'가불(식대)',  type:'number', width:72 },
-  { key:'incomeTax',      label:'소득세',      type:'number', width:68 },
-  { key:'localTax',       label:'주민세',      type:'calc',   width:68 },
-  { key:'pension',        label:'국민연금',    type:'number', width:80 },
-  { key:'healthIns',      label:'건강보험',    type:'number', width:80 },
-  { key:'ltcIns',         label:'장기요양보험', type:'number', width:90 },
-  { key:'empIns',         label:'고용보험료',  type:'calc',   width:80 },
-  { key:'totalDeduct',    label:'공제액계',    type:'calc',   width:90 },
-  { key:'netPay',         label:'실수령액',    type:'calc',   rowspanLabel:true, width:98 },
-  { spacer:true, width:14 },
-  { key:'fixedHourly',    label:'고정시급',    type:'calc',   group:'시급점검', groupSpan:2, width:80 },
-  { key:'hourlyCheck',    label:'시급확인',    type:'calc',   isCheck:true, width:80 },
-  { spacer:true, width:14 },
-  { key:'ordinaryWage',   label:'통상임금',    type:'calc',   group:'월통상임금점검', groupSpan:2, width:90 },
-  { key:'wageCheck',      label:'임금확인',    type:'calc',   isCheck:true, width:80 },
+  { key:'no',            label:'연번',        type:'text',   group:'인적사항', groupSpan:8, width:58 },
+  { key:'empNo',          label:'사번',        type:'text',   width:78 },
+  { key:'name',           label:'성명',        type:'text',   width:94 },
+  { key:'gender',         label:'성별',        type:'select', width:62 },
+  { key:'division',       label:'부문',        type:'text',   width:76 },
+  { key:'dept',           label:'부서',        type:'text',   width:94 },
+  { key:'position',       label:'직책',        type:'text',   width:114 },
+  { key:'dependents',     label:'부양가족',    type:'number', width:76 },
+  { key:'stdHours',       label:'월소정근로시간', type:'number', width:92 },
+  { key:'hourly',         label:'시급',        type:'calc',   width:88 },
+  { key:'annualSalary',   label:'연봉',        type:'number', width:124 },
+  { key:'baseSalary',     label:'기본급',      type:'number', group:'기본급여', groupSpan:2, width:116 },
+  { key:'jobAllow',       label:'직무수당',    type:'number', width:104 },
+  { key:'retentionHours', label:'보전시간(H)', type:'number', rowspanLabel:true, step:0.5, width:78 },
+  { key:'retentionAllow', label:'보전수당',    type:'number', rowspanLabel:true, width:102 },
+  { key:'subtotal',       label:'합계',        type:'calc',   rowspanLabel:true, width:112 },
+  { key:'satDayHours',    label:'주간토요(H)', type:'number', rowspanLabel:true, step:0.5, width:78 },
+  { key:'satNightHours',  label:'야간토요(H)', type:'number', rowspanLabel:true, step:0.5, width:78 },
+  { key:'satAllow',       label:'토요수당(주+야간)', type:'number', rowspanLabel:true, width:106 },
+  { key:'nightOtHours',   label:'야간연장(H)', type:'number', rowspanLabel:true, step:0.5, width:78 },
+  { key:'etcAllow',       label:'기타제수당(야간)', type:'number', rowspanLabel:true, width:104 },
+  { key:'otHours',        label:'연장시간',    type:'number', step:0.5, width:78 },
+  { key:'otPay',          label:'연장근로',    type:'number', group:'제수당', groupSpan:5, width:102 },
+  { key:'holidayHours',   label:'휴일근로시간', type:'number', step:0.5, width:88 },
+  { key:'holidayPay',     label:'휴일근로',    type:'calc',   width:102 },
+  { key:'deductHours',    label:'공제시간',    type:'number', step:0.5, width:78 },
+  { key:'deductPay',      label:'공제분',      type:'calc',   width:102 },
+  { key:'bonusCash',      label:'상여금(현금)', type:'number', width:106 },
+  { key:'bonusKind',      label:'상여금(현물)', type:'number', width:106 },
+  { key:'tuition',        label:'학자금',      type:'number', width:94 },
+  { key:'annualLeavePay', label:'연차수당',    type:'number', width:102 },
+  { key:'grossPay',       label:'지급총액',    type:'calc',   rowspanLabel:true, width:128 },
+  { key:'yearEndTax',     label:'연말정산',    type:'number', width:116 },
+  { key:'clubFee',        label:'사우회비',    type:'number', width:92 },
+  { key:'advance',        label:'가불',        type:'number', width:86 },
+  { key:'advanceMeal',    label:'가불(식대)',  type:'number', width:94 },
+  { key:'incomeTax',      label:'소득세',      type:'number', width:88 },
+  { key:'localTax',       label:'주민세',      type:'calc',   width:88 },
+  { key:'pension',        label:'국민연금',    type:'number', width:104 },
+  { key:'healthIns',      label:'건강보험',    type:'number', width:104 },
+  { key:'ltcIns',         label:'장기요양보험', type:'number', width:116 },
+  { key:'empIns',         label:'고용보험료',  type:'calc',   width:104 },
+  { key:'totalDeduct',    label:'공제액계',    type:'calc',   width:116 },
+  { key:'netPay',         label:'실수령액',    type:'calc',   rowspanLabel:true, width:128 },
+  { spacer:true, width:18 },
+  { key:'fixedHourly',    label:'고정시급',    type:'calc',   group:'시급점검', groupSpan:2, width:104 },
+  { key:'hourlyCheck',    label:'시급확인',    type:'calc',   isCheck:true, width:104 },
+  { spacer:true, width:18 },
+  { key:'ordinaryWage',   label:'통상임금',    type:'calc',   group:'월통상임금점검', groupSpan:2, width:116 },
+  { key:'wageCheck',      label:'임금확인',    type:'calc',   isCheck:true, width:104 },
 ];
 
 const FROZEN = ['no','empNo','name'];
