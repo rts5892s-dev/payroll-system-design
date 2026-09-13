@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<title>그대로급여</title>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F2F4F9;
+  --surface:#FFFFFF;
+  --surface-2:#EBEFF6;
+  --ink:#1B2438;
+  --ink-muted:#5B6579;
+  --border:#DBE1EC;
+  --accent:#1E3A5F;
+  --accent-ink:#14283F;
+  --accent-soft:#E4E9F3;
+  --gold:#AD8A3D;
+  --gold-ink:#7C601E;
+  --gold-soft:#F5EDDA;
+  --calc-bg:#EAF0F8;
+  --shadow: 0 1px 2px rgba(20,30,50,.06), 0 16px 36px rgba(20,30,50,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1420;
+    --surface:#171E2C;
+    --surface-2:#1D2534;
+    --ink:#E7ECF7;
+    --ink-muted:#94A0B8;
+    --border:#2C3648;
+    --accent:#7CA6D8;
+    --accent-ink:#BFD6F2;
+    --accent-soft:#1E2C42;
+    --gold:#D9B565;
+    --gold-ink:#F0D89A;
+    --gold-soft:#2E2712;
+    --calc-bg:#182234;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 20px 40px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1420;
+  --surface:#171E2C;
+  --surface-2:#1D2534;
+  --ink:#E7ECF7;
+  --ink-muted:#94A0B8;
+  --border:#2C3648;
+  --accent:#7CA6D8;
+  --accent-ink:#BFD6F2;
+  --accent-soft:#1E2C42;
+  --gold:#D9B565;
+  --gold-ink:#F0D89A;
+  --gold-soft:#2E2712;
+  --calc-bg:#182234;
+  --shadow: 0 1px 2px rgba(0,0,0,.35), 0 20px 40px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Noto Sans KR","Malgun Gothic",sans-serif; line-height:1.6;
+}
+.mono{ font-family:"JetBrains Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+a{ color:inherit; }
+
+/* ---------- Nav ---------- */
+nav.top{
+  position:sticky; top:0; z-index:20; background:var(--accent); color:#fff;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+.nav-inner{
+  max-width:1120px; margin:0 auto; padding:14px 20px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+}
+.brand{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.02rem; letter-spacing:-.01em; }
+.brand-mark{
+  width:30px; height:30px; border-radius:8px; background:var(--gold); color:#241B04;
+  display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;
+  font-family:"JetBrains Mono",monospace; font-size:.74rem; font-weight:700;
+}
+.nav-cta{
+  font:inherit; font-weight:700; font-size:.86rem; text-decoration:none;
+  background:var(--gold); color:#241B04; padding:9px 18px; border-radius:8px;
+  white-space:nowrap;
+}
+.nav-cta:hover{ filter:brightness(1.05); }
+
+.wrap{ max-width:1120px; margin:0 auto; padding-inline:20px; }
+
+/* ---------- Hero ---------- */
+.hero{ padding-block:64px 56px; }
+.hero-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:48px; align-items:center; }
+@media (max-width:860px){ .hero-grid{ grid-template-columns:1fr; } }
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:.8rem; letter-spacing:.09em; font-weight:700; text-transform:uppercase;
+  color:var(--accent-ink); background:var(--accent-soft); padding:6px 13px; border-radius:999px;
+}
+h1{
+  font-family:"Noto Serif KR",serif; font-weight:800; letter-spacing:-.015em;
+  font-size:clamp(2.1rem, 1.5rem + 2.6vw, 3.2rem); text-wrap:balance; margin:18px 0 16px; line-height:1.2;
+}
+h1 .accent{ color:var(--gold-ink); }
+.hero-sub{ font-size:1.05rem; color:var(--ink-muted); max-width:52ch; margin:0 0 28px; }
+.hero-ctas{ display:flex; gap:12px; flex-wrap:wrap; }
+.btn{
+  font:inherit; font-weight:700; font-size:.92rem; text-decoration:none; cursor:pointer;
+  padding:13px 22px; border-radius:9px; display:inline-flex; align-items:center; gap:8px;
+}
+.btn-primary{ background:var(--accent); color:#fff; border:1px solid var(--accent); }
+.btn-primary:hover{ background:var(--accent-ink); }
+.btn-ghost{ background:var(--surface); color:var(--ink); border:1px solid var(--border); }
+.btn-ghost:hover{ background:var(--surface-2); }
+
+/* ---------- Hero mock browser ---------- */
+.mockframe{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.mockbar{
+  display:flex; align-items:center; gap:6px; padding:9px 12px; border-bottom:1px solid var(--border);
+  background:var(--surface-2);
+}
+.mockbar .dot{ width:8px; height:8px; border-radius:50%; background:var(--border); }
+.mockbar .url{
+  margin-left:8px; font-size:.72rem; color:var(--ink-muted); font-family:"JetBrains Mono",monospace;
+  background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:3px 9px;
+}
+.mocksheet{ padding:14px; overflow-x:auto; }
+table.mock{ border-collapse:collapse; font-size:.72rem; width:100%; min-width:520px; }
+table.mock th, table.mock td{
+  border:1px solid var(--border); padding:5px 7px; white-space:nowrap;
+}
+table.mock thead tr:first-child th{ background:var(--surface-2); color:var(--ink-muted); font-weight:700; text-align:center; }
+table.mock thead tr:last-child th{ background:var(--surface-2); color:var(--ink-muted); font-weight:700; font-size:.68rem; }
+table.mock td{ font-family:"JetBrains Mono",monospace; text-align:right; }
+table.mock td.txt{ font-family:"Noto Sans KR",sans-serif; text-align:left; color:var(--ink); }
+table.mock td.calc{ background:var(--calc-bg); }
+table.mock td.calc.bad{ background:var(--gold-soft); color:var(--gold-ink); font-weight:700; }
+.mockcaption{ padding:0 14px 14px; font-size:.76rem; color:var(--ink-muted); }
+.mockcaption strong{ color:var(--ink); }
+
+/* ---------- Sections ---------- */
+section{ padding-block:56px; border-top:1px solid var(--border); }
+.section-head{ max-width:64ch; margin:0 0 32px; }
+.section-eyebrow{ font-size:.78rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-ink); margin:0 0 8px; }
+h2{ font-family:"Noto Serif KR",serif; font-weight:700; font-size:1.7rem; margin:0 0 10px; text-wrap:balance; }
+.section-desc{ color:var(--ink-muted); font-size:1rem; }
+
+/* ---------- Pain cards ---------- */
+.pain-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+@media (max-width:760px){ .pain-grid{ grid-template-columns:1fr; } }
+.pain-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:22px;
+  box-shadow:var(--shadow);
+}
+.pain-num{
+  font-family:"JetBrains Mono",monospace; font-weight:700; font-size:.78rem; color:var(--gold-ink);
+  background:var(--gold-soft); display:inline-block; padding:3px 9px; border-radius:6px; margin-bottom:14px;
+}
+.pain-card h3{ font-size:1.02rem; margin:0 0 8px; }
+.pain-card p{ margin:0; color:var(--ink-muted); font-size:.9rem; }
+
+/* ---------- Steps ---------- */
+.steps{ display:flex; flex-direction:column; }
+.step{
+  display:grid; grid-template-columns:56px 1fr; gap:18px; padding:20px 0; border-bottom:1px solid var(--border);
+}
+.step:last-child{ border-bottom:none; }
+.step-num{
+  width:44px; height:44px; border-radius:10px; background:var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-family:"JetBrains Mono",monospace; font-weight:700; font-size:1rem;
+}
+.step h3{ margin:2px 0 6px; font-size:1.02rem; }
+.step p{ margin:0; color:var(--ink-muted); font-size:.92rem; max-width:60ch; }
+
+/* ---------- Feature grid ---------- */
+.feat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+@media (max-width:860px){ .feat-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:600px){ .feat-grid{ grid-template-columns:1fr; } }
+.feat-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px;
+}
+.feat-icon{
+  width:38px; height:38px; border-radius:9px; background:var(--accent-soft); color:var(--accent-ink);
+  display:flex; align-items:center; justify-content:center; font-size:1.1rem; margin-bottom:12px;
+}
+.feat-card h3{ font-size:.96rem; margin:0 0 6px; }
+.feat-card p{ margin:0; font-size:.85rem; color:var(--ink-muted); }
+
+/* ---------- Stat strip ---------- */
+.stat-strip{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border);
+  border:1px solid var(--border); border-radius:12px; overflow:hidden;
+}
+@media (max-width:700px){ .stat-strip{ grid-template-columns:1fr; } }
+.stat-cell{ background:var(--surface); padding:26px 22px; text-align:center; }
+.stat-num{
+  font-family:"JetBrains Mono",monospace; font-weight:700; font-size:1.9rem; color:var(--accent-ink);
+  display:block;
+}
+.stat-label{ font-size:.84rem; color:var(--ink-muted); margin-top:6px; }
+
+/* ---------- Final CTA ---------- */
+.cta-band{
+  background:var(--accent); color:#fff; border-radius:16px; padding:40px 36px;
+  display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;
+}
+.cta-band h2{ color:#fff; margin:0 0 8px; }
+.cta-band p{ margin:0; color:rgba(255,255,255,.78); max-width:48ch; }
+.cta-band .btn-primary{ background:var(--gold); color:#241B04; border-color:var(--gold); }
+.cta-band .btn-primary:hover{ filter:brightness(1.05); }
+.cta-band .btn-ghost{ background:transparent; color:#fff; border-color:rgba(255,255,255,.4); }
+.cta-band .btn-ghost:hover{ background:rgba(255,255,255,.08); }
+
+footer.page{
+  padding:32px 20px 48px; color:var(--ink-muted); font-size:.82rem; text-align:center;
+  max-width:1120px; margin:0 auto;
+}
+</style>
+
+<nav class="top">
+  <div class="nav-inner">
+    <span class="brand"><span class="brand-mark">GY</span>그대로급여</span>
+    <a class="nav-cta" href="https://claude.ai/code/artifact/ea2783c7-cb3d-455e-8f4b-453ac75fcb77" target="_blank" rel="noopener">라이브 데모 보기</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <section class="hero" style="border-top:none;">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">중소 제조업을 위한 급여 · 근태관리</span>
+        <h1>쓰던 엑셀 그대로,<br>계산은 <span class="accent">자동으로</span></h1>
+        <p class="hero-sub">
+          51개 컬럼짜리 급여대장을 한 줄도 바꾸지 않고, 근태 입력부터 검증까지 자동화합니다.
+          군포공장에서 지금 실제로 쓰고 있는 방식을 그대로 도입하실 수 있습니다.
+        </p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="https://claude.ai/code/artifact/ea2783c7-cb3d-455e-8f4b-453ac75fcb77" target="_blank" rel="noopener">라이브 데모 체험하기 →</a>
+          <a class="btn btn-ghost" href="https://github.com/rts5892s-dev/payroll-system-design" target="_blank" rel="noopener">설계 문서 · SQL 스키마 보기</a>
+        </div>
+      </div>
+
+      <div class="mockframe">
+        <div class="mockbar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="url">payroll · 군포</span>
+        </div>
+        <div class="mocksheet">
+          <table class="mock">
+            <thead>
+              <tr>
+                <th colspan="3">인적사항</th><th colspan="2">기본급여</th><th colspan="2">제수당</th><th>지급총액</th><th>실수령액</th><th>시급확인</th>
+              </tr>
+              <tr>
+                <th>사번</th><th>성명</th><th>부서</th><th>기본급</th><th>시급</th><th>연장근로</th><th>휴일근로</th><th>-</th><th>-</th><th>-</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="txt">1001</td><td class="txt">홍길동</td><td class="txt">관리부</td>
+                <td>2,248,840</td><td class="calc">10,760</td><td>0</td><td class="calc">0</td>
+                <td class="calc">2,248,840</td><td class="calc">2,027,750</td><td class="calc">0</td>
+              </tr>
+              <tr>
+                <td class="txt">1002</td><td class="txt">김영희</td><td class="txt">생산1팀</td>
+                <td>2,650,000</td><td class="calc">12,679</td><td>143,000</td><td class="calc">0</td>
+                <td class="calc">2,823,000</td><td class="calc">2,551,830</td><td class="calc">0</td>
+              </tr>
+              <tr>
+                <td class="txt">1003</td><td class="txt">박민수</td><td class="txt">생산2팀</td>
+                <td>2,400,000</td><td class="calc">11,722</td><td>0</td><td class="calc">58,620</td>
+                <td class="calc">2,508,620</td><td class="calc">2,209,150</td><td class="calc bad">239</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mockcaption"><strong>파란 글자</strong> = 직접 입력, <strong>연두 배경</strong> = 자동계산, <strong>노란 배경</strong> = 검증 불일치</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <p class="section-eyebrow">이런 고민, 익숙하지 않으신가요</p>
+      <h2>급여대장 하나에 매달 반나절이 사라집니다</h2>
+      <p class="section-desc">엑셀이 나쁜 게 아니라, 사람이 엑셀을 대신 계산해주고 있는 게 문제입니다.</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <span class="pain-num">01</span>
+        <h3>51개 컬럼, 손으로 채우는 급여대장</h3>
+        <p>인적사항부터 4대보험까지 한 줄에 51개 항목. 직원이 늘수록 입력 시간과 오탈자 위험이 같이 늘어납니다.</p>
+      </div>
+      <div class="pain-card">
+        <span class="pain-num">02</span>
+        <h3>근태와 급여가 따로 놉니다</h3>
+        <p>근태 집계표를 만들고, 그 숫자를 다시 급여 시트에 옮겨 적는 이중 작업이 매달 반복됩니다.</p>
+      </div>
+      <div class="pain-card">
+        <span class="pain-num">03</span>
+        <h3>검증은 결국 사람 눈으로</h3>
+        <p>시급이 계약 연봉과 맞는지, 통상임금이 어긋나지 않았는지 매번 계산기를 두드려 대조해야 합니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <p class="section-eyebrow">어떻게 해결하나요</p>
+      <h2>근태 확정이 끝나야 급여 계산으로 넘어갑니다</h2>
+      <p class="section-desc">네 단계 모두 같은 데이터를 공유해서, 어디서 입력해도 결과가 어긋나지 않습니다.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <h3>근태 입력</h3>
+          <p>연장·야간연장·특근·휴일·공제 시간을 직원별로 일 단위 기록합니다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <h3>근태 확정 (게이트)</h3>
+          <p>담당자가 확정하기 전에는 급여 계산으로 넘어가지 않습니다 — 확정 후에는 기록이 잠깁니다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <h3>급여 계산</h3>
+          <p>원본 엑셀 수식을 그대로 옮긴 로직으로 자동 계산되고, 엑셀형·카드형 중 편한 화면으로 입력합니다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>
+          <h3>관리자 확인</h3>
+          <p>대시보드에서 부서별 지급총액과 검증 경고, 근태 미확정 인원을 한 화면에서 확인합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <p class="section-eyebrow">무엇이 달라지나요</p>
+      <h2>엑셀은 그대로, 일하는 방식만 바뀝니다</h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">▦</div>
+        <h3>엑셀형 화면</h3>
+        <p>원본 급여대장과 같은 컬럼 순서·색 구분·틀 고정. 기존 엑셀과 나란히 놓고 써도 헷갈리지 않습니다.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">▤</div>
+        <h3>카드형 화면</h3>
+        <p>직원 1명씩 큼직하게 입력. 스프레드시트가 낯선 담당자도 실수 없이 입력할 수 있습니다.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">◔</div>
+        <h3>근태 확정 게이트</h3>
+        <p>확정 전 편집 가능, 확정 후 잠금. 급여계산 전에 반드시 거치는 검토 단계입니다.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">◱</div>
+        <h3>관리자 대시보드</h3>
+        <p>전체 인원·지급총액·부서별 현황을 조회 전용으로. 값을 건드릴 일이 없어 안전합니다.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">✓</div>
+        <h3>실시간 검증</h3>
+        <p>시급확인·임금확인이 어긋나면 그 자리에서 바로 빨간색으로 표시됩니다.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">▧</div>
+        <h3>SQL 기반 설계</h3>
+        <p>13개 테이블로 근태·급여·법정요율을 분리 설계 — 세콤 등 외부 연동으로도 확장 가능합니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="stat-strip">
+      <div class="stat-cell"><span class="stat-num">51 → 4</span><span class="stat-label">51개 컬럼 급여대장 → 4개 화면</span></div>
+      <div class="stat-cell"><span class="stat-num">13</span><span class="stat-label">근태·급여 SQL 테이블 설계</span></div>
+      <div class="stat-cell"><span class="stat-num">13</span><span class="stat-label">원본 수식 그대로 자동화</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cta-band">
+      <div>
+        <h2>귀사의 급여대장도 그대로 옮겨드립니다</h2>
+        <p>지금 쓰시는 엑셀 양식을 기반으로 화면 구성과 계산 로직을 맞춰드립니다. 데모부터 먼저 확인해보세요.</p>
+      </div>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="https://claude.ai/code/artifact/ea2783c7-cb3d-455e-8f4b-453ac75fcb77" target="_blank" rel="noopener">라이브 데모 체험하기 →</a>
+        <a class="btn btn-ghost" href="https://github.com/rts5892s-dev/payroll-system-design" target="_blank" rel="noopener">설계 문서 보기</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="page">
+  이 페이지는 군포공장에서 실제 설계·운영 중인 급여·근태관리 시스템을 바탕으로 만든 소개 자료입니다.
+</footer>
