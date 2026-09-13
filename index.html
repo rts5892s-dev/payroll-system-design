@@ -326,6 +326,45 @@ label.card-f input:focus, label.card-f select:focus{ outline:2px solid var(--acc
 .card-srow.total{ border-top:1px solid var(--border); margin-top:6px; padding-top:10px; }
 .card-check{ display:flex; justify-content:space-between; align-items:center; padding:3px 0; font-size:.82rem; color:var(--ink-muted); }
 
+/* ---------- Admin dashboard ---------- */
+.dash-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:28px; }
+.kpi-tile{
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  padding:14px 16px; box-shadow:var(--shadow);
+}
+.kpi-tile .kpi-label{ font-size:.72rem; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.kpi-tile .kpi-value{
+  font-family:"JetBrains Mono", monospace; font-variant-numeric:tabular-nums;
+  font-size:1.3rem; font-weight:700; color:var(--ink);
+}
+.kpi-tile.warn .kpi-value{ color:var(--bad); }
+.kpi-tile .kpi-sub{ font-size:.72rem; color:var(--ink-muted); margin-top:3px; }
+
+.dash-section{ margin-bottom:30px; }
+.dash-section h3{ font-size:.95rem; font-weight:700; margin:0 0 14px; font-family:"Noto Serif KR", serif; }
+
+.dept-bars{ display:flex; flex-direction:column; gap:10px; }
+.dept-bar-row{ display:grid; grid-template-columns: 92px 1fr 96px; gap:10px; align-items:center; font-size:.84rem; }
+.dept-bar-track{ background:var(--surface-2); border-radius:4px; height:16px; overflow:hidden; }
+.dept-bar-fill{ background:var(--accent); height:100%; border-radius:4px; min-width:2px; }
+.dept-bar-value{ font-family:"JetBrains Mono", monospace; font-variant-numeric:tabular-nums; text-align:right; color:var(--ink-muted); }
+
+.warn-list{ display:flex; flex-direction:column; gap:8px; }
+.warn-row{ display:flex; align-items:baseline; gap:10px; background:var(--bad-soft); border-radius:8px; padding:10px 12px; font-size:.86rem; flex-wrap:wrap; }
+.warn-row .icon{ color:var(--bad); flex:0 0 auto; }
+.warn-row .who{ font-weight:700; color:var(--ink); }
+.warn-row .detail{ color:var(--ink-muted); font-size:.8rem; }
+.warn-empty{ color:var(--good); background:var(--good-soft); border-radius:8px; padding:10px 12px; font-size:.86rem; }
+
+.dash-table-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:10px; }
+table.dash-table{ width:100%; border-collapse:collapse; font-size:.84rem; }
+table.dash-table th, table.dash-table td{ padding:9px 12px; border-bottom:1px solid var(--border); text-align:right; white-space:nowrap; }
+table.dash-table th{ background:var(--surface-2); color:var(--ink-muted); font-weight:700; text-align:right; }
+table.dash-table th:nth-child(-n+4), table.dash-table td:nth-child(-n+4){ text-align:left; }
+table.dash-table td.mono{ font-family:"JetBrains Mono", monospace; font-variant-numeric:tabular-nums; }
+table.dash-table tbody tr:last-child td{ border-bottom:none; }
+table.dash-table tbody tr:hover td{ background:var(--surface-2); }
+
 footer.page{ padding-top:32px; color:var(--ink-muted); font-size:.82rem; }
 a{ color:var(--accent-ink); }
 </style>
@@ -479,20 +518,21 @@ a{ color:var(--accent-ink); }
   </section>
 
   <section id="excel-sheet">
-    <h2>입력 화면 — 2종 중 선택</h2>
+    <h2>화면 구성 — 입력 2종 + 관리자 대시보드</h2>
     <p class="section-desc">
-      같은 데이터를 두 가지 화면으로 제공합니다. 스프레드시트에 익숙한 담당자는 <strong>①엑셀형</strong>을,
-      한 사람씩 집중해서 확인하고 싶을 때는 <strong>②카드형</strong>을 선택하면 됩니다.
-      두 화면은 같은 계산 로직을 공유하므로 어느 쪽에서 입력해도 결과는 동일합니다.
+      담당자가 매월 값을 넣는 <strong>입력 화면 2종</strong>과, 계산이 끝난 뒤 전체 현황을 한눈에 보는
+      <strong>관리자 대시보드</strong>를 별도 화면으로 나눴습니다. 세 화면 모두 같은 데이터·계산 로직을 공유합니다.
     </p>
     <ul class="note-list">
       <li><span class="note-mark">●</span><span><strong>①엑셀형</strong> — 원본 급여대장과 동일한 컬럼 순서(A~AY)·색 구분·틀 고정을 그대로 재현해, 기존 엑셀과 나란히 대조하며 쓰기에 적합합니다.</span></li>
       <li><span class="note-mark">●</span><span><strong>②카드형</strong> — 직원 1명씩 큼직한 글씨와 그룹으로 나눠 입력받아, 컬럼이 많은 화면이 낯선 담당자도 실수 없이 입력할 수 있습니다.</span></li>
+      <li><span class="note-mark">●</span><span><strong>③관리자 대시보드</strong> — 입력이 끝난 뒤 전체 인원·지급총액·부서별 현황·검증 경고를 관리자가 한 화면에서 확인합니다. 입력은 없고 조회 전용입니다.</span></li>
     </ul>
 
     <div class="view-toggle">
       <button class="view-btn active" id="tab-sheet" data-view="sheet" type="button"><span class="num">1</span>엑셀형 화면</button>
       <button class="view-btn" id="tab-card" data-view="card" type="button"><span class="num">2</span>카드형 화면</button>
+      <button class="view-btn" id="tab-dashboard" data-view="dashboard" type="button"><span class="num">3</span>관리자 대시보드</button>
     </div>
 
     <div id="panel-sheet">
@@ -532,6 +572,11 @@ a{ color:var(--accent-ink); }
       <div class="card-shell">
         <div class="card-grid" id="card-body"></div>
       </div>
+    </div>
+
+    <div id="panel-dashboard" hidden>
+      <p class="view-caption">입력 화면과 같은 데이터를 관리자 관점에서 조회 전용으로 요약한 화면입니다. 이 화면에서는 값을 수정할 수 없습니다.</p>
+      <div id="dash-body"></div>
     </div>
   </section>
 
@@ -881,6 +926,96 @@ function updateCardCalc(row){
   });
 }
 
+/* ================= 화면 3: 관리자 대시보드 (조회 전용) ================= */
+function renderDashboard(){
+  const container = document.getElementById('dash-body');
+  container.innerHTML = '';
+  const data = ROWS.map(row => ({ row, c: calc(row) }));
+  const n = data.length || 1;
+
+  const totalGross = data.reduce((s, x) => s + x.c.grossPay, 0);
+  const totalDeduct = data.reduce((s, x) => s + x.c.totalDeduct, 0);
+  const totalNet = data.reduce((s, x) => s + x.c.netPay, 0);
+  const avgHourly = data.reduce((s, x) => s + x.c.hourly, 0) / n;
+  const warnings = data.filter(x => Math.abs(x.c.hourlyCheck) >= 1 || Math.abs(x.c.wageCheck) >= 1);
+
+  const kpis = document.createElement('div'); kpis.className = 'dash-kpis';
+  const tile = (label, value, sub, warn) => {
+    const d = document.createElement('div'); d.className = 'kpi-tile' + (warn ? ' warn' : '');
+    d.innerHTML = '<div class="kpi-label">' + label + '</div><div class="kpi-value">' + value + '</div>' +
+                  (sub ? '<div class="kpi-sub">' + sub + '</div>' : '');
+    return d;
+  };
+  kpis.appendChild(tile('총 인원', ROWS.length + '명'));
+  kpis.appendChild(tile('지급총액 합계', fmt(totalGross) + '원'));
+  kpis.appendChild(tile('공제액계 합계', fmt(totalDeduct) + '원'));
+  kpis.appendChild(tile('실수령액 합계', fmt(totalNet) + '원'));
+  kpis.appendChild(tile('평균 시급', fmt(avgHourly) + '원'));
+  kpis.appendChild(tile('검증 경고', (warnings.length ? '⚠ ' : '') + warnings.length + '건', warnings.length ? '확인이 필요합니다' : '이상 없음', warnings.length > 0));
+  container.appendChild(kpis);
+
+  const deptMap = {};
+  data.forEach(x => { const d = x.row.dept || '(미지정)'; deptMap[d] = (deptMap[d] || 0) + x.c.grossPay; });
+  const deptEntries = Object.entries(deptMap).sort((a, b) => b[1] - a[1]);
+  const maxDept = Math.max(1, ...deptEntries.map(e => e[1]));
+  const deptSection = document.createElement('div'); deptSection.className = 'dash-section';
+  deptSection.innerHTML = '<h3>부서별 지급총액</h3>';
+  const bars = document.createElement('div'); bars.className = 'dept-bars';
+  deptEntries.forEach(([dept, total]) => {
+    const row = document.createElement('div'); row.className = 'dept-bar-row';
+    row.innerHTML = '<span>' + dept + '</span>' +
+      '<span class="dept-bar-track"><span class="dept-bar-fill" style="width:' + (total / maxDept * 100).toFixed(1) + '%"></span></span>' +
+      '<span class="dept-bar-value">' + fmt(total) + '원</span>';
+    bars.appendChild(row);
+  });
+  deptSection.appendChild(bars);
+  container.appendChild(deptSection);
+
+  const warnSection = document.createElement('div'); warnSection.className = 'dash-section';
+  warnSection.innerHTML = '<h3>검증 경고 — 시급확인 · 임금확인</h3>';
+  if (warnings.length === 0){
+    const ok = document.createElement('div'); ok.className = 'warn-empty';
+    ok.textContent = '전체 ' + ROWS.length + '명 모두 시급확인 · 임금확인이 정상입니다.';
+    warnSection.appendChild(ok);
+  } else {
+    const list = document.createElement('div'); list.className = 'warn-list';
+    warnings.forEach(x => {
+      const parts = [];
+      if (Math.abs(x.c.hourlyCheck) >= 1) parts.push('시급확인 ' + fmt(x.c.hourlyCheck) + '원');
+      if (Math.abs(x.c.wageCheck) >= 1) parts.push('임금확인 ' + fmt(x.c.wageCheck) + '원');
+      const row = document.createElement('div'); row.className = 'warn-row';
+      row.innerHTML = '<span class="icon">⚠</span>' +
+        '<span class="who">' + (x.row.empNo || '-') + ' · ' + (x.row.name || '이름 미입력') + '</span>' +
+        '<span class="detail">' + (x.row.dept || '') + ' — ' + parts.join(' / ') + '</span>';
+      list.appendChild(row);
+    });
+    warnSection.appendChild(list);
+  }
+  container.appendChild(warnSection);
+
+  const tableSection = document.createElement('div'); tableSection.className = 'dash-section';
+  tableSection.innerHTML = '<h3>전체 직원 요약</h3>';
+  const wrap = document.createElement('div'); wrap.className = 'dash-table-wrap';
+  const table = document.createElement('table'); table.className = 'dash-table';
+  table.innerHTML = '<thead><tr><th>사번</th><th>성명</th><th>부서</th><th>직책</th><th>지급총액</th><th>공제액계</th><th>실수령액</th><th>검증</th></tr></thead>';
+  const tbody = document.createElement('tbody');
+  data.forEach(x => {
+    const bad = Math.abs(x.c.hourlyCheck) >= 1 || Math.abs(x.c.wageCheck) >= 1;
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + (x.row.empNo || '-') + '</td><td>' + (x.row.name || '-') + '</td>' +
+      '<td>' + (x.row.dept || '-') + '</td><td>' + (x.row.position || '-') + '</td>' +
+      '<td class="mono">' + fmt(x.c.grossPay) + '</td><td class="mono">' + fmt(x.c.totalDeduct) + '</td>' +
+      '<td class="mono">' + fmt(x.c.netPay) + '</td><td>' +
+      (bad ? '<span class="badge badge-bad"><span class="badge-dot"></span>확인필요</span>'
+           : '<span class="badge badge-good"><span class="badge-dot"></span>정상</span>') + '</td>';
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  tableSection.appendChild(wrap);
+  container.appendChild(tableSection);
+}
+
 /* ================= 화면 전환 · 공용 동작 ================= */
 let activeView = 'sheet';
 let cardIndex = 0;
@@ -889,9 +1024,13 @@ function showView(view){
   activeView = view;
   document.getElementById('panel-sheet').hidden = view !== 'sheet';
   document.getElementById('panel-card').hidden = view !== 'card';
+  document.getElementById('panel-dashboard').hidden = view !== 'dashboard';
   document.getElementById('tab-sheet').classList.toggle('active', view === 'sheet');
   document.getElementById('tab-card').classList.toggle('active', view === 'card');
-  if (view === 'sheet') renderSheetFull(); else renderCard();
+  document.getElementById('tab-dashboard').classList.toggle('active', view === 'dashboard');
+  if (view === 'sheet') renderSheetFull();
+  else if (view === 'card') renderCard();
+  else renderDashboard();
 }
 
 function addRow(){
@@ -915,6 +1054,7 @@ document.getElementById('sheet-body').addEventListener('input', e => {
 
 document.getElementById('tab-sheet').addEventListener('click', () => showView('sheet'));
 document.getElementById('tab-card').addEventListener('click', () => showView('card'));
+document.getElementById('tab-dashboard').addEventListener('click', () => showView('dashboard'));
 document.getElementById('btn-add-row-sheet').addEventListener('click', addRow);
 document.getElementById('btn-add-row-card').addEventListener('click', () => { addRow(); cardIndex = ROWS.length - 1; renderCard(); });
 document.getElementById('card-select').addEventListener('change', e => { cardIndex = Number(e.target.value); renderCard(); });
