@@ -804,7 +804,7 @@ CREATE TABLE payroll_details (
           </table>
         </div>
       </div>
-      <p class="sample-note">예시 3행(박민수)은 <strong>기본급+직무수당이 연봉÷12보다 50,000원 많도록</strong> 일부러 어긋나게 넣은 데이터입니다 — 임금확인·시급확인 셀이 즉시 빨간색으로 표시되는지 확인해 보세요.</p>
+      <p class="sample-note">예시 3행(박준혁)은 <strong>기본급+직무수당이 연봉÷12보다 50,000원 많도록</strong> 일부러 어긋나게 넣은 데이터입니다 — 임금확인·시급확인 셀이 즉시 빨간색으로 표시되는지 확인해 보세요.</p>
     </div>
 
     <div id="panel-card" hidden>
@@ -933,35 +933,35 @@ FROZEN.forEach(key => {
 });
 
 const ROWS = [
-  { no:1, empNo:'1001', name:'홍길동', gender:'남', division:'관리', dept:'관리부', position:'팀장(부장)',
-    dependents:2, stdHours:209, annualSalary:26986080, baseSalary:2248840, jobAllow:0,
+  { no:1, empNo:'2201', name:'김도윤', gender:'남', division:'관리', dept:'관리부', position:'대리',
+    dependents:1, stdHours:209, annualSalary:30000000, baseSalary:2500000, jobAllow:0,
     retentionHours:0, retentionAllow:0, satDayHours:0, satNightHours:0, satAllow:0, nightOtHours:0, etcAllow:0,
     otHours:0, otPay:0, holidayHours:0, deductHours:0,
     bonusCash:0, bonusKind:0, tuition:0, annualLeavePay:0,
-    yearEndTax:0, clubFee:0, advance:0, advanceMeal:0,
-    incomeTax:11360, pension:100830, healthIns:77380, ltcIns:10160,
+    yearEndTax:0, clubFee:10000, advance:0, advanceMeal:0,
+    incomeTax:23000, pension:112500, healthIns:88620, ltcIns:11480,
     attendance: [], attConfirmed:false, attConfirmedAt:null },
-  { no:2, empNo:'1002', name:'김영희', gender:'여', division:'생산', dept:'생산1팀', position:'사원',
-    dependents:1, stdHours:209, annualSalary:31800000, baseSalary:2650000, jobAllow:0,
-    retentionHours:0, retentionAllow:0, satDayHours:0, satNightHours:0, satAllow:30000, nightOtHours:0, etcAllow:0,
-    otHours:10, otPay:143000, holidayHours:0, deductHours:0,
-    bonusCash:0, bonusKind:0, tuition:0, annualLeavePay:0,
-    yearEndTax:0, clubFee:5000, advance:0, advanceMeal:0,
-    incomeTax:34700, pension:119250, healthIns:104920, ltcIns:13590,
-    attendance: [
-      { date:'2026-03-05', typeKey:'ot', hours:5 },
-      { date:'2026-03-12', typeKey:'ot', hours:5 },
-    ], attConfirmed:false, attConfirmedAt:null },
-  { no:3, empNo:'1003', name:'박민수', gender:'남', division:'생산', dept:'생산2팀', position:'반장',
-    dependents:3, stdHours:209, annualSalary:28800000, baseSalary:2400000, jobAllow:50000,
+  { no:2, empNo:'2202', name:'이서연', gender:'여', division:'생산', dept:'생산1팀', position:'주임',
+    dependents:0, stdHours:209, annualSalary:33600000, baseSalary:2800000, jobAllow:0,
     retentionHours:0, retentionAllow:0, satDayHours:0, satNightHours:0, satAllow:0, nightOtHours:0, etcAllow:0,
-    otHours:0, otPay:0, holidayHours:5, deductHours:0,
+    otHours:8, otPay:160760, holidayHours:0, deductHours:0,
     bonusCash:0, bonusKind:0, tuition:0, annualLeavePay:0,
-    yearEndTax:0, clubFee:5000, advance:0, advanceMeal:0,
-    incomeTax:20500, pension:108000, healthIns:89400, ltcIns:11570,
+    yearEndTax:0, clubFee:10000, advance:0, advanceMeal:0,
+    incomeTax:33000, pension:126000, healthIns:99260, ltcIns:12850,
     attendance: [
-      { date:'2026-03-08', typeKey:'holiday', hours:5 },
-    ], attConfirmed:true, attConfirmedAt:'2026-03-31 17:05' },
+      { date:'2026-03-06', typeKey:'ot', hours:4 },
+      { date:'2026-03-13', typeKey:'ot', hours:4 },
+    ], attConfirmed:false, attConfirmedAt:null },
+  { no:3, empNo:'2203', name:'박준혁', gender:'남', division:'생산', dept:'생산2팀', position:'반장',
+    dependents:2, stdHours:209, annualSalary:30000000, baseSalary:2450000, jobAllow:100000,
+    retentionHours:0, retentionAllow:0, satDayHours:0, satNightHours:0, satAllow:0, nightOtHours:0, etcAllow:0,
+    otHours:0, otPay:0, holidayHours:6, deductHours:0,
+    bonusCash:0, bonusKind:0, tuition:0, annualLeavePay:0,
+    yearEndTax:0, clubFee:10000, advance:0, advanceMeal:0,
+    incomeTax:28000, pension:114750, healthIns:90400, ltcIns:11710,
+    attendance: [
+      { date:'2026-03-08', typeKey:'holiday', hours:6 },
+    ], attConfirmed:true, attConfirmedAt:'2026-03-31 17:20' },
 ];
 
 const roundUp10 = n => Math.ceil(n/10)*10;
